@@ -270,7 +270,7 @@ function template_main()
 					var x = new Array();
 					var textFields = [\'subject\', ', JavaScriptEscape($context['post_box_name']), ', ', JavaScriptEscape($context['session_var']), ', \'icon\', \'guestname\', \'email\', \'evtitle\', \'question\', \'topic\'];
 					var numericFields = [
-						\'board\', \'topic\', \'last_msg\',
+						\'board\', \'topic\', \'last_msg\'
 					];
 					var checkboxFields = [
 						\'ns\'

@@ -296,7 +296,7 @@ function Post($post_errors = array())
 		$context['icon'] = isset($_REQUEST['icon']) ? preg_replace('~[\./\\\\*\':"<>]~', '', $_REQUEST['icon']) : 'xx';
 
 		// Set the destination action for submission.
-		$context['destination'] = 'post2;start=' . $_REQUEST['start'] . (isset($_REQUEST['msg']) ? ';msg=' . $_REQUEST['msg'] . ';' . $context['session_var'] . '=' . $context['session_id'] : '') .;
+		$context['destination'] = 'post2;start=' . $_REQUEST['start'] . (isset($_REQUEST['msg']) ? ';msg=' . $_REQUEST['msg'] . ';' . $context['session_var'] . '=' . $context['session_id'] : '');
 		$context['submit_label'] = isset($_REQUEST['msg']) ? $txt['save'] : $txt['post'];
 
 		// Previewing an edit?
@@ -453,7 +453,7 @@ function Post($post_errors = array())
 		}
 
 		// Set the destinaton.
-		$context['destination'] = 'post2;start=' . $_REQUEST['start'] . ';msg=' . $_REQUEST['msg'] . ';' . $context['session_var'] . '=' . $context['session_id'] .;
+		$context['destination'] = 'post2;start=' . $_REQUEST['start'] . ';msg=' . $_REQUEST['msg'] . ';' . $context['session_var'] . '=' . $context['session_id'] .'';
 		$context['submit_label'] = $txt['save'];
 	}
 	// Posting...
@@ -468,7 +468,7 @@ function Post($post_errors = array())
 			$context['name'] = isset($_SESSION['guest_name']) ? $_SESSION['guest_name'] : '';
 			$context['email'] = isset($_SESSION['guest_email']) ? $_SESSION['guest_email'] : '';
 		}
-		$context['destination'] = 'post2;start=' . $_REQUEST['start'] .;
+		$context['destination'] = 'post2;start=' . $_REQUEST['start'] .'';
 
 		$context['submit_label'] = $txt['post'];
 
