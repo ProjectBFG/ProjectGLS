@@ -113,8 +113,6 @@ function MessageIndex()
 	{
 		foreach ($board_info['moderators'] as $mod)
 			$context['link_moderators'][] ='<a href="' . $scripturl . '?action=profile;u=' . $mod['id'] . '" title="' . $txt['board_moderator'] . '">' . $mod['name'] . '</a>';
-
-		$context['linktree'][count($context['linktree']) - 1]['extra_after'] = '<span class="board_moderators"> (' . (count($context['link_moderators']) == 1 ? $txt['moderator'] : $txt['moderators']) . ': ' . implode(', ', $context['link_moderators']) . ')</span>';
 	}
 
 	// Mark current and parent boards as seen.
@@ -794,19 +792,6 @@ function QuickModeration()
 			$markCache[] = $topic;
 		elseif ($action == 'sticky')
 			$stickyCache[] = $topic;
-		elseif ($action == 'move')
-		{
-			require_once($sourcedir . '/MoveTopic.php');
-			moveTopicConcurrence();
-
-			// $moveCache[0] is the topic, $moveCache[1] is the board to move to.
-			$moveCache[1][$topic] = (int) (isset($_REQUEST['move_tos'][$topic]) ? $_REQUEST['move_tos'][$topic] : $_REQUEST['move_to']);
-
-			if (empty($moveCache[1][$topic]))
-				continue;
-
-			$moveCache[0][] = $topic;
-		}
 		elseif ($action == 'remove')
 			$removeCache[] = $topic;
 		elseif ($action == 'lock')
@@ -893,12 +878,6 @@ function QuickModeration()
 		$smcFunc['db_free_result']($request);
 
 		$moveCache = $moveCache2;
-
-		require_once($sourcedir . '/MoveTopic.php');
-
-		// Do the actual moves...
-		foreach ($moveTos as $to => $topics)
-			moveTopics($topics, $to);
 
 		// Does the post counts need to be updated?
 		if (!empty($moveTos))

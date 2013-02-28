@@ -607,19 +607,6 @@ function Post($post_errors = array())
 	else
 		$context['page_title'] = $txt['post_reply'];
 
-	// Build the link tree.
-	if (empty($topic))
-		$context['linktree'][] = array(
-			'name' => '<em>' . $txt['start_new_topic'] . '</em>'
-		);
-	else
-		$context['linktree'][] = array(
-			'url' => $scripturl . '?topic=' . $topic . '.' . $_REQUEST['start'],
-			'name' => $form_subject,
-			'extra_before' => '<span><strong class="nav">' . $context['page_title'] . ' ( </strong></span>',
-			'extra_after' => '<span><strong class="nav"> )</strong></span>'
-		);
-
 	$context['subject'] = addcslashes($form_subject, '"');
 	$context['message'] = str_replace(array('"', '<', '>', '&nbsp;'), array('&quot;', '&lt;', '&gt;', ' '), $form_message);
 
@@ -1243,9 +1230,6 @@ function Post2()
 	if (!empty($_POST['announce_topic']))
 		redirectexit('action=announce;sa=selectgroup;topic=' . $topic . (!empty($_POST['move']) && allowedTo('move_any') ? ';move' : '') . (empty($_REQUEST['goback']) ? '' : ';goback'));
 
-	if (!empty($_POST['move']) && allowedTo('move_any'))
-		redirectexit('action=movetopic;topic=' . $topic . '.0' . (empty($_REQUEST['goback']) ? '' : ';goback'));
-
 	// Return to post if the mod is on.
 	if (isset($_REQUEST['msg']) && !empty($_REQUEST['goback']))
 		redirectexit('topic=' . $topic . '.msg' . $_REQUEST['msg'] . '#msg' . $_REQUEST['msg'], isBrowser('ie'));
@@ -1443,9 +1427,7 @@ function AnnouncementSend()
 	if ($smcFunc['db_num_rows']($request) == 0)
 	{
 		logAction('announce_topic', array('topic' => $topic), 'user');
-		if (!empty($_REQUEST['move']) && allowedTo('move_any'))
-			redirectexit('action=movetopic;topic=' . $topic . '.0' . (empty($_REQUEST['goback']) ? '' : ';goback'));
-		elseif (!empty($_REQUEST['goback']))
+		if (!empty($_REQUEST['goback']))
 			redirectexit('topic=' . $topic . '.new;boardseen#new', isBrowser('ie'));
 		else
 			redirectexit('board=' . $board . '.0');

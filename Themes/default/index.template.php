@@ -14,8 +14,7 @@
 	contains the main template layer that displays the header and footer of
 	the forum, namely with main_above and main_below. It also contains the
 	menu sub template, which appropriately displays the menu; the init sub
-	template, which is there to set the theme up; (init can be missing.) and
-	the linktree sub template, which sorts out the link tree.
+	template, which is there to set the theme up; (init can be missing.).
 
 	The init sub template should load any data and set any hardcoded options.
 
@@ -24,9 +23,6 @@
 
 	The main_below sub template, conversely, is shown after the main content.
 	It should probably contain the copyright statement and some other things.
-
-	The linktree sub template should display the link tree, using the data
-	in the $context['linktree'] variable.
 
 	The menu sub template should display all the relevant buttons the user
 	wants and or needs.
@@ -182,19 +178,26 @@ function template_body_above()
 						<form class="navbar-search pull-right" action="', $scripturl, '?action=search2" method="post" accept-charset="', $context['character_set'], '">
 							<input type="text" name="search" placeholder="', $txt['search'], '" />
 						</form>
-						<ul class="nav">
-							<li class="active"><a href="',$scripturl, '">Home</a></li>
-							<li><a href="',$scripturl, '?action=blog">Blog</a></li>
-							<li><a href="',$scripturl, '?action=gallery">Gallery</a></li>
-						</ul>
+						', template_menu(), '
 					</div>
 				</div>
 			</div>
 		</div>
-		<div class="container-fluid">
-			<div class="row-fluid">';
-				template_menu();
-				theme_linktree();
+		<div id="mainpage">
+			<div id="leftside" class="span3 pull-left">
+				<div id="index">
+					<div id="partial">
+						<div id="date">', $context['current_time'], '</div>
+						<ul class="entrylist">';
+			for ($i=1;$i<=50;$i++)
+				echo '
+							<li>topic ', $i, '</li>';
+			echo '
+						</ul>
+					</div>
+				</div>
+			</div>
+			<div id="rightside" class="offset2">';
 }
 
 function template_body_below()
@@ -204,10 +207,8 @@ function template_body_below()
 	echo '
 			</div>
 			<hr />
-			<footer>
-				<p>', theme_copyright(), '</p>
-			</footer>
-		</div>';
+			<div id="footer">
+				', theme_copyright(), '';
 }
 
 function template_html_below()
@@ -218,59 +219,11 @@ function template_html_below()
 	template_javascript(true);
 
 	echo '
+			</div>
+		</div>
 	<script src="', $settings['theme_url'], '/scripts/bootstrap.min.js"></script>
 </body>
 </html>';
-}
-
-/**
- * Show a linktree. This is that thing that shows "My Community | General Category | General Discussion"..
- * @param bool $force_show = false
- */
-function theme_linktree($force_show = false)
-{
-	global $context, $settings, $options, $shown_linktree, $scripturl, $txt;
-
-	// If linktree is empty, just return - also allow an override.
-	if (empty($context['linktree']) || (!empty($context['dont_default_linktree']) && !$force_show))
-		return;
-
-	echo '
-		<ul class="breadcrumb">';
-
-	// Each tree item has a URL and name. Some may have extra_before and extra_after.
-	foreach ($context['linktree'] as $link_num => $tree)
-	{
-		echo '
-			<li', ($link_num == count($context['linktree']) - 1) ? ' class="active"' : '', '>';
-
-		// Show something before the link?
-		if (isset($tree['extra_before']))
-			echo $tree['extra_before'];
-
-		// Show the link, including a URL if it should have one.
-		echo $settings['linktree_link'] && isset($tree['url']) && $link_num != count($context['linktree']) - 1 ? '
-				<a href="' . $tree['url'] . '">' . $tree['name'] . '</a>' : $tree['name'];
-
-		// Show something after the link...?
-		if (isset($tree['extra_after']))
-			echo $tree['extra_after'];
-			
-		// Don't show a separator for the first one.
-		// Better here. Always points to the next level when the linktree breaks to a second line.
-		// Picked a better looking HTML entity, and added support for RTL plus a span for styling.
-		if (!($link_num == count($context['linktree']) - 1))
-			echo '
-				<span class="divider">', $context['right_to_left'] ? ' &#9668; ' : ' &#9658; ', '</span>';
-
-		echo '
-			</li>';
-	}
-
-	echo '
-		</ul>';
-
-	$shown_linktree = true;
 }
 
 /**
@@ -281,11 +234,12 @@ function template_menu()
 	global $context, $settings, $options, $scripturl, $txt;
 
 	echo '
-			<ul class="nav nav-pills" id="dropdown_main_menu">';
+			<ul class="nav">';
 
 	// Note: Menu markup has been cleaned up to remove unnecessary spans and classes.
 	foreach ($context['menu_buttons'] as $act => $button)
 	{
+
 		if ($button['active_button'] && empty($button['sub_buttons']))
 			$li_class = 'active';
 		elseif (!empty($button['sub_buttons']) && !$button['active_button'])
@@ -294,12 +248,14 @@ function template_menu()
 			$li_class = 'active dropdown';
 		else
 			$li_class = '';
-		
+
 		echo '
-				<li', $li_class ? ' class="' . $li_class . '"' : '', '>
-					<a', !empty($button['sub_buttons']) ? ' class="dropdown-toggle disabled" role="button" data-toggle="dropdown"' : '' ,' href="', $button['href'], '" ', isset($button['target']) ? 'target="' . $button['target'] . '"' : '', '>
-						', $button['title'], '
+				<li', !empty($li_class) ? ' class="' . $li_class . '"' : '', '>
+					<a', !empty($button['sub_buttons']) ? ' class="dropdown-toggle disabled" data-toggle="dropdown"' : '' , ' href="', $button['href'], '" ', isset($button['target']) ? 'target="' . $button['target'] . '"' : '', '>
+						', $button['title'], !empty($button['sub_buttons']) ? '
+						<b class="caret"></b>' : '' , '
 					</a>';
+
 		if (!empty($button['sub_buttons']))
 		{
 			echo '
