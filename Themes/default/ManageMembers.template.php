@@ -7,7 +7,7 @@
  * @copyright 2012 Simple Machines
  * @license http://www.simplemachines.org/about/smf/license.php BSD
  *
- * @version 2.1 Alpha 1
+ * @version 1.0 Alpha 1
  */
 
 function template_search_members()
@@ -245,7 +245,7 @@ function template_admin_browse()
 		<br />
 		<form id="admin_form_wrapper" action="', $scripturl, '?action=admin;area=viewmembers" method="post" accept-charset="', $context['character_set'], '" name="postFormOutstanding" id="postFormOutstanding" onsubmit="return onOutstandingSubmit();">
 				<h3 class="catbg">', $txt['admin_browse_outstanding'], '</h3>
-			<script type="text/javascript"><!-- // --><![CDATA[
+			<script><!-- // --><![CDATA[
 				function onOutstandingSubmit()
 				{
 					if (document.forms.postFormOutstanding.todo.value == "")

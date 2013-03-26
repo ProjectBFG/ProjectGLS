@@ -7,7 +7,7 @@
  * @copyright 2012 Simple Machines
  * @license http://www.simplemachines.org/about/smf/license.php BSD
  *
- * @version 2.1 Alpha 1
+ * @version 1.0 Alpha 1
  */
 
 // This function displays all the stuff you get with a richedit box - BBC, smileys etc.
@@ -27,7 +27,7 @@ function template_control_richedit($editor_id, $smileyContainer = null, $bbcCont
 			</div>
 		</div>
 		<input type="hidden" name="', $editor_id, '_mode" id="', $editor_id, '_mode" value="0" />
-		<script type="text/javascript"><!-- // --><![CDATA[
+		<script><!-- // --><![CDATA[
 			$(document).ready(function() {
 				', !empty($context['bbcodes_handlers']) ? $context['bbcodes_handlers'] : '', '
 
@@ -165,15 +165,14 @@ function template_control_richedit_buttons($editor_id)
 			<span id="throbber" style="display:none"><img src="' . $settings['images_url'] . '/loading_sm.gif" alt="" class="centericon" />&nbsp;</span>
 			<span id="draft_lastautosave" ></span>
 		</span>
-		<script type="text/javascript" src="', $settings['default_theme_url'], '/scripts/drafts.js?alp21"></script>
-		<script type="text/javascript"><!-- // --><![CDATA[
+		<script src="', $settings['default_theme_url'], '/scripts/drafts.js?alp21"></script>
+		<script><!-- // --><![CDATA[
 			var oDraftAutoSave = new smf_DraftAutoSave({
 				sSelf: \'oDraftAutoSave\',
 				sLastNote: \'draft_lastautosave\',
 				sLastID: \'id_draft\',
 				sSceditorID: \'', $editor_id, '\',
 				sType: \'post\',
-				iBoard: ', (empty($context['current_board']) ? 0 : $context['current_board']), ',
 				iFreq: ', $context['drafts_autosave_frequency'], '
 			});
 		// ]]></script>';
@@ -193,8 +192,8 @@ function template_control_richedit_buttons($editor_id)
 			<span id="throbber" style="display:none"><img src="' . $settings['images_url'] . '/loading_sm.gif" alt="" class="centericon" />&nbsp;</span>
 			<span id="draft_lastautosave" ></span>
 		</span>
-		<script type="text/javascript" src="', $settings['default_theme_url'], '/scripts/drafts.js?alp21"></script>
-		<script type="text/javascript"><!-- // --><![CDATA[
+		<script src="', $settings['default_theme_url'], '/scripts/drafts.js?alp21"></script>
+		<script><!-- // --><![CDATA[
 			var oDraftAutoSave = new smf_DraftAutoSave({
 				sSelf: \'oDraftAutoSave\',
 				sLastNote: \'draft_lastautosave\',
@@ -202,7 +201,6 @@ function template_control_richedit_buttons($editor_id)
 				sSceditorID: \'', $editor_id, '\',
 				sType: \'post\',
 				bPM: true,
-				iBoard: 0,
 				iFreq: ', (empty($modSettings['drafts_autosave_frequency']) ? 60000 : $modSettings['drafts_autosave_frequency'] * 1000), '
 			});
 		// ]]></script>';

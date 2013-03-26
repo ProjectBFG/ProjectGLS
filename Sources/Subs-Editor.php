@@ -11,11 +11,11 @@
  * @copyright 2012 Simple Machines
  * @license http://www.simplemachines.org/about/smf/license.php BSD
  *
- * @version 2.1 Alpha 1
+ * @version 1.0 Alpha 1
  */
 
 if (!defined('SMF'))
-	die('Hacking attempt...');
+	die('No direct access...'); 
 
 /**
  * !!!Compatibility!!!
@@ -1356,83 +1356,6 @@ function loadLocale()
 }
 
 /**
- * Retrieves a list of message icons.
- * - Based on the settings, the array will either contain a list of default
- *   message icons or a list of custom message icons retrieved from the database.
- * - The board_id is needed for the custom message icons (which can be set for
- *   each board individually).
- *
- * @param int $board_id
- * @return array
- */
-function getMessageIcons($board_id)
-{
-	global $modSettings, $context, $txt, $settings, $smcFunc;
-
-	if (empty($modSettings['messageIcons_enable']))
-	{
-		loadLanguage('Post');
-
-		$icons = array(
-			array('value' => 'xx', 'name' => $txt['standard']),
-			array('value' => 'thumbup', 'name' => $txt['thumbs_up']),
-			array('value' => 'thumbdown', 'name' => $txt['thumbs_down']),
-			array('value' => 'exclamation', 'name' => $txt['excamation_point']),
-			array('value' => 'question', 'name' => $txt['question_mark']),
-			array('value' => 'lamp', 'name' => $txt['lamp']),
-			array('value' => 'smiley', 'name' => $txt['icon_smiley']),
-			array('value' => 'angry', 'name' => $txt['icon_angry']),
-			array('value' => 'cheesy', 'name' => $txt['icon_cheesy']),
-			array('value' => 'grin', 'name' => $txt['icon_grin']),
-			array('value' => 'sad', 'name' => $txt['icon_sad']),
-			array('value' => 'wink', 'name' => $txt['icon_wink']),
-		);
-
-		foreach ($icons as $k => $dummy)
-		{
-			$icons[$k]['url'] = $settings['images_url'] . '/post/' . $dummy['value'] . '.png';
-			$icons[$k]['is_last'] = false;
-		}
-	}
-	// Otherwise load the icons, and check we give the right image too...
-	else
-	{
-		if (($temp = cache_get_data('posting_icons-' . $board_id, 480)) == null)
-		{
-			$request = $smcFunc['db_query']('select_message_icons', '
-				SELECT title, filename
-				FROM {db_prefix}message_icons
-				WHERE id_board IN (0, {int:board_id})',
-				array(
-					'board_id' => $board_id,
-				)
-			);
-			$icon_data = array();
-			while ($row = $smcFunc['db_fetch_assoc']($request))
-				$icon_data[] = $row;
-			$smcFunc['db_free_result']($request);
-
-			$icons = array();
-			foreach ($icon_data as $icon)
-			{
-				$icons[$icon['filename']] = array(
-					'value' => $icon['filename'],
-					'name' => $icon['title'],
-					'url' => $settings[file_exists($settings['theme_dir'] . '/images/post/' . $icon['filename'] . '.png') ? 'images_url' : 'default_images_url'] . '/post/' . $icon['filename'] . '.png',
-					'is_last' => false,
-				);
-			}
-
-			cache_put_data('posting_icons-' . $board_id, $icons, 480);
-		}
-		else
-			$icons = $temp;
-	}
-
-	return array_values($icons);
-}
-
-/**
  * Compatibility function - used in 1.1 for showing a post box.
  *
  * @param string $msg
@@ -1945,7 +1868,7 @@ function create_control_verification(&$verificationOptions, $do_test = false)
 		// Some javascript ma'am?
 		if (!empty($verificationOptions['override_visual']) || (!empty($modSettings['visual_verification_type']) && !isset($verificationOptions['override_visual'])))
 			$context['html_headers'] .= '
-		<script type="text/javascript" src="' . $settings['default_theme_url'] . '/scripts/captcha.js"></script>';
+		<script src="' . $settings['default_theme_url'] . '/scripts/captcha.js"></script>';
 
 		$context['use_graphic_library'] = in_array('gd', get_loaded_extensions());
 
@@ -1973,7 +1896,7 @@ function create_control_verification(&$verificationOptions, $do_test = false)
 	// Add javascript for the object.
 	if ($context['controls']['verification'][$verificationOptions['id']]['show_visual'])
 		$context['insert_after_template'] .= '
-			<script type="text/javascript"><!-- // --><![CDATA[
+			<script><!-- // --><![CDATA[
 				var verification' . $verificationOptions['id'] . 'Handle = new smfCaptcha("' . $thisVerification['image_href'] . '", "' . $verificationOptions['id'] . '", ' . ($context['use_graphic_library'] ? 1 : 0) . ');
 			// ]]></script>';
 

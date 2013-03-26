@@ -7,7 +7,7 @@
  * @copyright 2012 Simple Machines
  * @license http://www.simplemachines.org/about/smf/license.php BSD
  *
- * @version 2.1 Alpha 1
+ * @version 1.0 Alpha 1
  */
 
 function template_main()
@@ -29,7 +29,7 @@ function template_main()
 			<div class="', $post['alternate'] == 0 ? 'windowbg' : 'windowbg2', ' core_posts">
 					<div class="counter">', $post['counter'], '</div>
 					<div class="topic_details">
-						<h5>', $post['board']['link'], ' / ', $post['link'], '</h5>
+						<h5>', $post['link'], '</h5>
 						<span class="smalltext">', $txt['last_post'], ' ', $txt['by'], ' <strong>', $post['poster']['link'], ' </strong> - ', $post['time'], '</span>
 					</div>
 					<div class="list_posts">', $post['message'], '</div>';

@@ -11,11 +11,11 @@
  * @copyright 2012 Simple Machines
  * @license http://www.simplemachines.org/about/smf/license.php BSD
  *
- * @version 2.1 Alpha 1
+ * @version 1.0 Alpha 1
  */
 
 if (!defined('SMF'))
-	die('Hacking attempt...');
+	die('No direct access...'); 
 
 /**
  * Locks a topic... either by way of a moderator or the topic starter.
@@ -29,7 +29,7 @@ if (!defined('SMF'))
 */
 function LockTopic()
 {
-	global $topic, $user_info, $sourcedir, $board, $smcFunc;
+	global $topic, $user_info, $sourcedir, $smcFunc;
 
 	// Just quit if there's no topic to lock.
 	if (empty($topic))
@@ -86,7 +86,7 @@ function LockTopic()
 
 	// If they are allowed a "moderator" permission, log it in the moderator log.
 	if (!$user_lock)
-		logAction($locked ? 'lock' : 'unlock', array('topic' => $topic, 'board' => $board));
+		logAction($locked ? 'lock' : 'unlock', array('topic' => $topic));
 	// Notify people that this topic has been locked?
 	sendNotifications($topic, empty($locked) ? 'unlock' : 'lock');
 
@@ -106,7 +106,7 @@ function LockTopic()
  */
 function Sticky()
 {
-	global $modSettings, $topic, $board, $sourcedir, $smcFunc;
+	global $modSettings, $topic, $sourcedir, $smcFunc;
 
 	// Make sure the user can sticky it, and they are stickying *something*.
 	isAllowedTo('make_sticky');
@@ -149,14 +149,14 @@ function Sticky()
 	);
 
 	// Log this sticky action - always a moderator thing.
-	logAction(empty($is_sticky) ? 'sticky' : 'unsticky', array('topic' => $topic, 'board' => $board));
+	logAction(empty($is_sticky) ? 'sticky' : 'unsticky', array('topic' => $topic));
 	// Notify people that this topic has been stickied?
 	if (empty($is_sticky))
 		sendNotifications($topic, 'sticky');
 
 	// Take them back to the now stickied topic.
 	redirectexit('topic=' . $topic . '.' . $_REQUEST['start'] . (WIRELESS ? ';moderate' : ''));
-	redirectexit('topic=' . $topic . '.' . $_REQUEST['start'] . ';moderate' : '');
+	redirectexit('topic=' . $topic . '.' . $_REQUEST['start'] . ';moderate');
 }
 
 ?>

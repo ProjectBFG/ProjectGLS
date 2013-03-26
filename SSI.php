@@ -8,7 +8,7 @@
  * @copyright 2012 Simple Machines
  * @license http://www.simplemachines.org/about/smf/license.php BSD
  *
- * @version 2.1 Alpha 1
+ * @version 1.0 Alpha 1
  */
 
 // Don't do anything if SMF is already loaded.
@@ -89,15 +89,15 @@ if (empty($modSettings['rand_seed']) || mt_rand(1, 250) == 69)
 
 // Check on any hacking attempts.
 if (isset($_REQUEST['GLOBALS']) || isset($_COOKIE['GLOBALS']))
-	die('Hacking attempt...');
+	die('No direct access...'); 
 elseif (isset($_REQUEST['ssi_theme']) && (int) $_REQUEST['ssi_theme'] == (int) $ssi_theme)
-	die('Hacking attempt...');
+	die('No direct access...'); 
 elseif (isset($_COOKIE['ssi_theme']) && (int) $_COOKIE['ssi_theme'] == (int) $ssi_theme)
-	die('Hacking attempt...');
+	die('No direct access...'); 
 elseif (isset($_REQUEST['ssi_layers'], $ssi_layers) && (@get_magic_quotes_gpc() ? stripslashes($_REQUEST['ssi_layers']) : $_REQUEST['ssi_layers']) == $ssi_layers)
-	die('Hacking attempt...');
+	die('No direct access...'); 
 if (isset($_REQUEST['context']))
-	die('Hacking attempt...');
+	die('No direct access...'); 
 
 // Make sure wireless is always off.
 define('WIRELESS', false);
@@ -1371,7 +1371,7 @@ function ssi_pollVote()
 		echo '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
-	<script type="text/javascript"><!-- // --><![CDATA[
+	<script><!-- // --><![CDATA[
 		history.go(-1);
 	// ]]></script>
 </head>

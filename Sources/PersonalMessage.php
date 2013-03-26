@@ -12,11 +12,11 @@
  * @copyright 2012 Simple Machines
  * @license http://www.simplemachines.org/about/smf/license.php BSD
  *
- * @version 2.1 Alpha 1
+ * @version 1.0 Alpha 1
  */
 
 if (!defined('SMF'))
-	die('Hacking attempt...');
+	die('No direct access...'); 
 
 /**
  * This helps organize things...
@@ -175,7 +175,7 @@ function MessageMain()
 	$context['drafts_autosave'] = !empty($context['drafts_pm_save']) && !empty($modSettings['drafts_autosave_enabled']) && allowedTo('pm_autosave_draft');
 
 	// Preferences...
-	$context['display_mode'] = WIRELESS ? 0 : $user_settings['pm_prefs'] & 3;
+	$context['display_mode'] = $user_settings['pm_prefs'] & 3;
 
 	$subActions = array(
 		'manlabels' => 'ManageLabels',
@@ -773,8 +773,7 @@ function MessageFolder()
 
 	$context['can_send_pm'] = allowedTo('pm_send');
 	$context['can_send_email'] = allowedTo('send_email_to_members');
-	if (!WIRELESS)
-		$context['sub_template'] = 'folder';
+	$context['sub_template'] = 'folder';
 	$context['page_title'] = $txt['pm_inbox'];
 
 	// Finally mark the relevant messages as read.
@@ -3138,13 +3137,11 @@ function ManageRules()
 		FROM {db_prefix}membergroups AS mg
 			LEFT JOIN {db_prefix}group_moderators AS gm ON (gm.id_group = mg.id_group AND gm.id_member = {int:current_member})
 		WHERE mg.min_posts = {int:min_posts}
-			AND mg.id_group != {int:moderator_group}
 			AND mg.hidden = {int:not_hidden}
 		ORDER BY mg.group_name',
 		array(
 			'current_member' => $user_info['id'],
 			'min_posts' => -1,
-			'moderator_group' => 3,
 			'not_hidden' => 0,
 		)
 	);

@@ -8,11 +8,11 @@
  * @copyright 2012 Simple Machines
  * @license http://www.simplemachines.org/about/smf/license.php BSD
  *
- * @version 2.1 Alpha 1
+ * @version 1.0 Alpha 1
  */
 
 if (!defined('SMF'))
-	die('Hacking attempt...');
+	die('No direct access...'); 
 
 /**
  * Custom Search API class .. used when custom SMF index is used
@@ -23,13 +23,13 @@ class custom_search
 	 *This is the last version of SMF that this was tested on, to protect against API changes.
 	 * @var type
 	 */
-	public $version_compatible = 'SMF 2.1 Alpha 1';
+	public $version_compatible = 'SMF 1.0 Alpha 1';
 
 	/**
 	 *This won't work with versions of SMF less than this.
 	 * @var type
 	 */
-	public $min_smf_version = 'SMF 2.1 Alpha 1';
+	public $min_smf_version = 'SMF 1.0 Alpha 1';
 
 	/**
 	 * Is it supported?
@@ -208,8 +208,6 @@ class custom_search
 
 		if ($query_params['user_query'])
 			$query_where[] = '{raw:user_query}';
-		if ($query_params['board_query'])
-			$query_where[] = 'm.id_board {raw:board_query}';
 
 		if ($query_params['topic'])
 			$query_where[] = 'm.id_topic = {int:topic}';

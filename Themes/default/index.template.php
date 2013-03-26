@@ -7,7 +7,7 @@
  * @copyright 2012 Simple Machines
  * @license http://www.simplemachines.org/about/smf/license.php BSD
  *
- * @version 2.1 Alpha 1
+ * @version 1.0 Alpha 1
  */
 
 /*	This template is, perhaps, the most important template in the theme. It
@@ -47,10 +47,10 @@ function template_init()
 	/* What document type definition is being used? (for font size and other issues.)
 		'xhtml' for an XHTML 1.0 document type definition.
 		'html' for an HTML 4.01 document type definition. */
-	$settings['doctype'] = 'xhtml';
+	$settings['doctype'] = 'HTML';
 
 	// The version this template/theme is for. This should probably be the version of SMF it was created for.
-	$settings['theme_version'] = '2.0';
+	$settings['theme_version'] = '1.0';
 
 	// Set a setting that tells the theme that it can render the tabs.
 	$settings['use_tabs'] = true;
@@ -82,13 +82,9 @@ function template_html_above()
 
 	// The ?alp21 part of this link is just here to make sure browsers don't cache it wrongly.
 	echo '
-	<link rel="stylesheet" type="text/css" href="', $settings['theme_url'], '/css/bootstrap.css" />
-	<link rel="stylesheet" type="text/css" href="', $settings['theme_url'], '/css/index.css?alp21" />
+	<link rel="stylesheet" href="', $settings['theme_url'], '/css/bootstrap.css" />
+	<link rel="stylesheet" href="', $settings['theme_url'], '/css/index.css?alp21" />
     <link href="', $settings['theme_url'], '/css/bootstrap-responsive.css" rel="stylesheet">';
-
-	// Quick and dirty testing of RTL horrors. Remove before production build.
-	//echo '
-	//<link rel="stylesheet" type="text/css" href="', $settings['theme_url'], '/css/rtl.css?alp21" />';
 
 	// load in any css from mods or themes so they can overwrite if wanted
 	template_css();
@@ -146,18 +142,12 @@ function template_html_above()
 	else if (!empty($context['current_topic']))
 		echo '<link rel="prev" href="', $scripturl, '?topic=', $context['current_topic'], '.0;prev_next=prev" />';
 
-	// If we're in a board, or a topic for that matter, the index will be the board's index.
-	if (!empty($context['current_board']))
-		echo '
-	<link rel="index" href="', $scripturl, '?board=', $context['current_board'], '.0" />';
-
 	// Output any remaining HTML headers. (from mods, maybe?)
 	echo $context['html_headers'];
 
 	echo '
 </head>
-<body id="', $context['browser_body_id'], '" class="action_', !empty($context['current_action']) ? htmlspecialchars($context['current_action']) : (!empty($context['current_board']) ?
-		'messageindex' : (!empty($context['current_topic']) ? 'display' : 'home')), !empty($context['current_board']) ? ' board_' . htmlspecialchars($context['current_board']) : '', '">';
+<body id="', $context['browser_body_id'], '" class="action_', !empty($context['current_action']) ? htmlspecialchars($context['current_action']) : '', '">';
 }
 
 function template_body_above()
@@ -165,39 +155,25 @@ function template_body_above()
 	global $context, $settings, $options, $scripturl, $txt, $modSettings;
 
 	echo '
-		<div class="navbar navbar-inverse navbar-fixed-top">
-			<div class="navbar-inner">
-				<div class="container-fluid">
-					<a class="brand" href="', $scripturl, '">', $context['forum_name'], '</a>
-					<a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-						<span class="icon-bar"></span>
-						<span class="icon-bar"></span>
-						<span class="icon-bar"></span>
-					</a>
-					<div class="nav-collapse collapse">
-						<form class="navbar-search pull-right" action="', $scripturl, '?action=search2" method="post" accept-charset="', $context['character_set'], '">
-							<input type="text" name="search" placeholder="', $txt['search'], '" />
-						</form>
-						', template_menu(), '
-					</div>
+	<div class="navbar navbar-inverse navbar-fixed-top">
+		<div class="navbar-inner">
+			<div class="container-fluid">
+				<a class="brand" href="', $scripturl, '">', $context['forum_name'], '</a>
+				<a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				</a>
+				<div class="nav-collapse collapse">
+					<form class="navbar-search pull-right" action="', $scripturl, '?action=search2" method="post" accept-charset="', $context['character_set'], '">
+						<input type="text" id="main_search" autocomplete="off" name="search" placeholder="', $txt['search'], '" />
+					</form>
+					', template_menu(), '
 				</div>
 			</div>
 		</div>
-		<div id="mainpage">
-			<div id="leftside" class="span3 pull-left">
-				<div id="index">
-					<div id="partial">
-						<div id="date">', $context['current_time'], '</div>
-						<ul class="entrylist">';
-			for ($i=1;$i<=50;$i++)
-				echo '
-							<li>topic ', $i, '</li>';
-			echo '
-						</ul>
-					</div>
-				</div>
-			</div>
-			<div id="rightside" class="offset2">';
+	</div>
+	<div class="container">';
 }
 
 function template_body_below()
@@ -205,10 +181,9 @@ function template_body_below()
 	global $context, $settings, $options, $scripturl, $txt, $modSettings;
 
 	echo '
-			</div>
-			<hr />
-			<div id="footer">
-				', theme_copyright(), '';
+		<hr />
+		<div id="footer">
+			', theme_copyright();
 }
 
 function template_html_below()
@@ -219,8 +194,8 @@ function template_html_below()
 	template_javascript(true);
 
 	echo '
-			</div>
 		</div>
+	</div>
 	<script src="', $settings['theme_url'], '/scripts/bootstrap.min.js"></script>
 </body>
 </html>';

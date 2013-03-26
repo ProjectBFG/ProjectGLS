@@ -11,11 +11,11 @@
  * @copyright 2012 Simple Machines
  * @license http://www.simplemachines.org/about/smf/license.php BSD
  *
- * @version 2.1 Alpha 1
+ * @version 1.0 Alpha 1
  */
 
 if (!defined('SMF'))
-	die('Hacking attempt...');
+	die('No direct access...'); 
 
 /**
  * The main entrance point for the 'Paid Subscription' screen, calling
@@ -128,7 +128,7 @@ function ModifySubscriptionSettings($return_config = false)
 
 	// We want javascript for our currency options.
 	$context['settings_insert_below'] = '
-		<script type="text/javascript"><!-- // --><![CDATA[
+		<script><!-- // --><![CDATA[
 			function toggleOther()
 			{
 				var otherOn = document.getElementById("paid_currency").value == \'other\';
@@ -569,10 +569,8 @@ function ModifySubscription()
 	$request = $smcFunc['db_query']('', '
 		SELECT id_group, group_name
 		FROM {db_prefix}membergroups
-		WHERE id_group != {int:moderator_group}
-			AND min_posts = {int:min_posts}',
+		WHERE min_posts = {int:min_posts}',
 		array(
-			'moderator_group' => 3,
 			'min_posts' => -1,
 		)
 	);

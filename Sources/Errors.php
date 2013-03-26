@@ -12,11 +12,11 @@
  * @copyright 2012 Simple Machines
  * @license http://www.simplemachines.org/about/smf/license.php BSD
  *
- * @version 2.1 Alpha 1
+ * @version 1.0 Alpha 1
  */
 
 if (!defined('SMF'))
-	die('Hacking attempt...');
+	die('No direct access...'); 
 
 /**
  * Log an error, if the error logging is enabled.
@@ -67,10 +67,6 @@ function log_error($error_message, $error_type = 'general', $file = null, $line 
 
 	// Don't log the session hash in the url twice, it's a waste.
 	$query_string = htmlspecialchars((SMF == 'SSI' ? '' : '?') . preg_replace(array('~;sesc=[^&;]+~', '~' . session_name() . '=' . session_id() . '[&;]~'), array(';sesc', ''), $query_string));
-
-	// Just so we know what board error messages are from.
-	if (isset($_POST['board']) && !isset($_GET['board']))
-		$query_string .= ($query_string == '' ? 'board=' : ';board=') . $_POST['board'];
 
 	// What types of categories do we have?
 	$known_error_types = array(
@@ -253,7 +249,7 @@ function error_handler($error_level, $error_string, $file, $line)
 
 	// We should NEVER get to this point.  Any fatal error MUST quit, or very bad things can happen.
 	if ($error_level % 255 == E_ERROR)
-		die('Hacking attempt...');
+		die('No direct access...'); 
 }
 
 /**

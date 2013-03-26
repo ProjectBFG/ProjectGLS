@@ -10,11 +10,11 @@
  * @copyright 2012 Simple Machines
  * @license http://www.simplemachines.org/about/smf/license.php BSD
  *
- * @version 2.1 Alpha 1
+ * @version 1.0 Alpha 1
  */
 
 if (!defined('SMF'))
-	die('Hacking attempt...');
+	die('No direct access...'); 
 
 /**
  * Show the database queries for debugging
@@ -34,7 +34,7 @@ function ViewQuery()
 		fatal_lang_error('no_access', false);
 
 	// Don't allow except for administrators.
-	isAllowedTo('admin_forum');
+	// isAllowedTo('admin_forum');
 
 	// If we're just hiding/showing, do it now.
 	if (isset($_REQUEST['sa']) && $_REQUEST['sa'] == 'hide')

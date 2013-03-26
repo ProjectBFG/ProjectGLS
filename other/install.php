@@ -8,10 +8,10 @@
  * @copyright 2012 Simple Machines
  * @license http://www.simplemachines.org/about/smf/license.php BSD
  *
- * @version 2.1 Alpha 1
+ * @version 1.0 Alpha 1
  */
 
-$GLOBALS['current_smf_version'] = '2.1 Alpha 1';
+$GLOBALS['current_smf_version'] = '1.0 Alpha 1';
 $GLOBALS['db_script_version'] = '2-1';
 
 $GLOBALS['required_php_version'] = '5.1.0';
@@ -1156,7 +1156,7 @@ function DatabasePopulation()
 	}
 
 	// Check for the ALTER privilege.
-	if (!empty($databases[$db_type]['alter_support']) && $smcFunc['db_query']('', "ALTER TABLE {$db_prefix}boards ORDER BY id_board", array('security_override' => true, 'db_error_skip' => true)) === false)
+	if (!empty($databases[$db_type]['alter_support']) && $smcFunc['db_query']('', "ALTER TABLE {$db_prefix}topics ORDER BY id_topic", array('security_override' => true, 'db_error_skip' => true)) === false)
 	{
 		$incontext['error'] = $txt['error_db_alter_priv'];
 		return false;
@@ -1305,7 +1305,7 @@ function AdminAccount()
 					'member_ip' => 'string', 'member_ip2' => 'string', 'buddy_list' => 'string', 'pm_ignore_list' => 'string',
 					'message_labels' => 'string', 'website_title' => 'string', 'website_url' => 'string', 'location' => 'string',
 					'signature' => 'string', 'usertitle' => 'string', 'secret_question' => 'string',
-					'additional_groups' => 'string', 'ignore_boards' => 'string', 'openid_uri' => 'string',
+					'additional_groups' => 'string',
 				),
 				array(
 					stripslashes($_POST['username']), stripslashes($_POST['username']), sha1(strtolower(stripslashes($_POST['username'])) . stripslashes($_POST['password1'])), stripslashes($_POST['email']),
@@ -1314,7 +1314,7 @@ function AdminAccount()
 					$ip, $ip, '', '',
 					'', '', '', '',
 					'', '', '',
-					'', '', '',
+					'',
 				),
 				array('id_member')
 			);
@@ -1457,7 +1457,7 @@ function DeleteInstall()
 	// Now is the perfect time to fetch the SM files.
 	require_once($sourcedir . '/ScheduledTasks.php');
 	// Sanity check that they loaded earlier!
-	if (isset($modSettings['recycle_board']))
+	if (isset($modSettings['enableEmbeddedFlash']))
 	{
 		$forum_version = $current_smf_version;  // The variable is usually defined in index.php so lets just use our variable to do it for us.
 		scheduled_fetchSMfiles(); // Now go get those files!
@@ -1962,50 +1962,22 @@ function template_install_above()
 		<meta name="robots" content="noindex" />
 		<title>', $txt['smf_installer'], '</title>
 		<link rel="stylesheet" type="text/css" href="Themes/default/css/index.css?alp21" />
+		<link rel="stylesheet" type="text/css" href="Themes/default/css/bootstrap.min.css" />
 		<link rel="stylesheet" type="text/css" href="Themes/default/css/install.css?alp21" />
-		<script type="text/javascript" src="Themes/default/scripts/script.js"></script>
+		<script src="Themes/default/scripts/script.js"></script>
 	</head>
 	<body>
-		<div id="header">
-			<div class="frame">
-				<h1 class="forumtitle">', $txt['smf_installer'], '</h1>
-				<img id="smflogo" src="Themes/default/images/smflogo.png" alt="Simple Machines Forum" title="Simple Machines Forum" />
-			</div>
-		</div>
-		<div id="wrapper">
-			<div id="upper_section">
-				<div id="inner_section">
-					<div id="inner_wrap">';
-
-	// Have we got a language drop down - if so do it on the first step only.
-	if (!empty($incontext['detected_languages']) && count($incontext['detected_languages']) > 1 && $incontext['current_step'] == 0)
-	{
-		echo '
-						<div class="news">
-							<form action="', $installurl, '" method="get">
-								<label for="installer_language">', $txt['installer_language'], ':</label>
-								<select id="installer_language" name="lang_file" onchange="location.href = \'', $installurl, '?lang_file=\' + this.options[this.selectedIndex].value;">';
-
-		foreach ($incontext['detected_languages'] as $lang => $name)
-			echo '
-									<option', isset($_SESSION['installer_temp_lang']) && $_SESSION['installer_temp_lang'] == $lang ? ' selected="selected"' : '', ' value="', $lang, '">', $name, '</option>';
-
-		echo '
-								</select>
-								<noscript><input type="submit" value="', $txt['installer_language_set'], '" class="button_submit" /></noscript>
-							</form>
-						</div>
-						<hr class="clear" />';
-	}
-
-	echo '
-					</div>
+		<div class="navbar navbar-inverse navbar-fixed-top">
+			<div class="navbar-inner">
+				<div class="container-fluid">
+					<span class="brand">', $txt['smf_installer'], '</span>
 				</div>
 			</div>
-			<div id="content_section">
-				<div id="main_content_section">
-					<div id="main_steps">
-						<h2>', $txt['upgrade_progress'], '</h2>
+		</div>
+		<div class="container-fluid">
+			<div class="row-fluid">
+				<div class="span3" id="main_steps">
+					<h2>', $txt['upgrade_progress'], '</h2>
 						<ul>';
 
 	foreach ($incontext['steps'] as $num => $step)
@@ -2014,13 +1986,37 @@ function template_install_above()
 
 	echo '
 						</ul>
+				</div>
+				<div class="span9">';
+
+	// Have we got a language drop down - if so do it on the first step only.
+	if (!empty($incontext['detected_languages']) && count($incontext['detected_languages']) > 1 && $incontext['current_step'] == 0)
+	{
+		echo '
+					<div class="news">
+						<form action="', $installurl, '" method="get">
+							<label for="installer_language">', $txt['installer_language'], ':</label>
+							<select id="installer_language" name="lang_file" onchange="location.href = \'', $installurl, '?lang_file=\' + this.options[this.selectedIndex].value;">';
+
+		foreach ($incontext['detected_languages'] as $lang => $name)
+			echo '
+								<option', isset($_SESSION['installer_temp_lang']) && $_SESSION['installer_temp_lang'] == $lang ? ' selected="selected"' : '', ' value="', $lang, '">', $name, '</option>';
+
+		echo '
+							</select>
+							<noscript><input type="submit" value="', $txt['installer_language_set'], '" class="button_submit" /></noscript>
+						</form>
 					</div>
-					<div id="progress_bar">
-						<div id="overall_text">', $incontext['overall_percent'], '%</div>
-						<div id="overall_progress" style="width: ', $incontext['overall_percent'], '%;">&nbsp;</div>
-						<div class="overall_progress">', $txt['upgrade_overall_progress'], '</div>
+					<hr class="clear" />';
+	}
+
+	echo '
+					<div class="progress">
+						<div class="bar" style="width: ', $incontext['overall_percent'], '%;">
+							<p>', $incontext['overall_percent'], '% ', $txt['upgrade_overall_progress'], '</p>
+						</div>
 					</div>
-					<div id="main_screen" class="clear">
+					<div id="main_screen" class="clear well">
 						<h2>', $incontext['page_title'], '</h2>
 						<div class="panel">';
 }
@@ -2036,10 +2032,10 @@ function template_install_below()
 
 		if (!empty($incontext['continue']))
 			echo '
-									<input type="submit" id="contbutt" name="contbutt" value="', $txt['upgrade_continue'], '" onclick="return submitThisOnce(this);" class="button_submit" />';
+									<input type="submit" id="contbutt" name="contbutt" value="', $txt['upgrade_continue'], '" onclick="return submitThisOnce(this);" class="btn pull-right" />';
 		if (!empty($incontext['skip']))
 			echo '
-									<input type="submit" id="skip" name="skip" value="', $txt['upgrade_skip'], '" onclick="return submitThisOnce(this);" class="button_submit" />';
+									<input type="submit" id="skip" name="skip" value="', $txt['upgrade_skip'], '" onclick="return submitThisOnce(this);" class="btn pull-right" />';
 		echo '
 								</div>';
 	}
@@ -2055,12 +2051,10 @@ function template_install_below()
 				</div>
 			</div>
 		</div>
-		<div id="footer_section">
-			<div class="frame">
-				<ul class="reset">
-					<li class="copyright"><a href="http://www.simplemachines.org/" title="Simple Machines Forum" target="_blank" class="new_win">SMF &copy; 2011, Simple Machines</a></li>
-				</ul>
-			</div>
+		<div id="footer">
+			<ul class="reset">
+				<li class="copyright"><a href="http://www.simplemachines.org/" title="Simple Machines Forum" target="_blank" class="new_win">SMF &copy; 2011, Simple Machines</a></li>
+			</ul>
 		</div>
 	</body>
 </html>';
@@ -2072,7 +2066,7 @@ function template_welcome_message()
 	global $incontext, $installurl, $txt;
 
 	echo '
-	<script type="text/javascript" src="http://www.simplemachines.org/smf/current-version.js?version=' . $GLOBALS['current_smf_version'] . '"></script>
+	<script src="http://www.simplemachines.org/smf/current-version.js?version=' . $GLOBALS['current_smf_version'] . '"></script>
 	<form action="', $incontext['form_url'], '" method="post">
 		<p>', sprintf($txt['install_welcome_desc'], $GLOBALS['current_smf_version']), '</p>
 		<div id="version_warning" style="margin: 2ex; padding: 2ex; border: 2px dashed #a92174; color: black; background-color: #fbbbe2; display: none;">
@@ -2094,7 +2088,7 @@ function template_welcome_message()
 
 	// For the latest version stuff.
 	echo '
-		<script type="text/javascript"><!-- // --><![CDATA[
+		<script><!-- // --><![CDATA[
 			// Latest version?
 			function smfCurrentVersion()
 			{
@@ -2181,26 +2175,26 @@ function template_chmod_files()
 		<form action="', $incontext['form_url'], '" method="post">
 			<table width="520" cellspacing="0" cellpadding="0" border="0" align="center" style="margin: 1em 0;">
 				<tr>
-					<td width="26%" valign="top" class="textbox"><label for="ftp_server">', $txt['ftp_server'], ':</label></td>
+					<td width="26%" valign="top"><label for="ftp_server">', $txt['ftp_server'], ':</label></td>
 					<td>
 						<div style="float: ', empty($txt['lang_rtl']) ? 'right' : 'left', '; margin-', empty($txt['lang_rtl']) ? 'right' : 'left', ': 1px;"><label for="ftp_port" class="textbox"><strong>', $txt['ftp_port'], ':&nbsp;</strong></label> <input type="text" size="3" name="ftp_port" id="ftp_port" value="', $incontext['ftp']['port'], '" class="input_text" /></div>
 						<input type="text" size="30" name="ftp_server" id="ftp_server" value="', $incontext['ftp']['server'], '" style="width: 70%;" class="input_text" />
 						<div style="font-size: smaller; margin-bottom: 2ex;">', $txt['ftp_server_info'], '</div>
 					</td>
 				</tr><tr>
-					<td width="26%" valign="top" class="textbox"><label for="ftp_username">', $txt['ftp_username'], ':</label></td>
+					<td width="26%" valign="top"><label for="ftp_username">', $txt['ftp_username'], ':</label></td>
 					<td>
 						<input type="text" size="50" name="ftp_username" id="ftp_username" value="', $incontext['ftp']['username'], '" style="width: 99%;" class="input_text" />
 						<div style="font-size: smaller; margin-bottom: 2ex;">', $txt['ftp_username_info'], '</div>
 					</td>
 				</tr><tr>
-					<td width="26%" valign="top" class="textbox"><label for="ftp_password">', $txt['ftp_password'], ':</label></td>
+					<td width="26%" valign="top"><label for="ftp_password">', $txt['ftp_password'], ':</label></td>
 					<td>
 						<input type="password" size="50" name="ftp_password" id="ftp_password" style="width: 99%;" class="input_password" />
 						<div style="font-size: smaller; margin-bottom: 3ex;">', $txt['ftp_password_info'], '</div>
 					</td>
 				</tr><tr>
-					<td width="26%" valign="top" class="textbox"><label for="ftp_path">', $txt['ftp_path'], ':</label></td>
+					<td width="26%" valign="top"><label for="ftp_path">', $txt['ftp_path'], ':</label></td>
 					<td style="padding-bottom: 1ex;">
 						<input type="text" size="50" name="ftp_path" id="ftp_path" value="', $incontext['ftp']['path'], '" style="width: 99%;" class="input_text" />
 						<div style="font-size: smaller; margin-bottom: 2ex;">', $incontext['ftp']['path_msg'], '</div>
@@ -2231,7 +2225,7 @@ function template_database_settings()
 	{
 		echo '
 			<tr>
-				<td width="20%" valign="top" class="textbox"><label for="db_type_input">', $txt['db_settings_type'], ':</label></td>
+				<td width="20%" valign="top"><label for="db_type_input">', $txt['db_settings_type'], ':</label></td>
 				<td>
 					<select name="db_type" id="db_type_input" onchange="toggleDBInput();">';
 
@@ -2257,38 +2251,38 @@ function template_database_settings()
 
 	echo '
 			<tr id="db_server_contain">
-				<td width="20%" valign="top" class="textbox"><label for="db_server_input">', $txt['db_settings_server'], ':</label></td>
+				<td width="20%" valign="top"><label for="db_server_input">', $txt['db_settings_server'], ':</label></td>
 				<td>
 					<input type="text" name="db_server" id="db_server_input" value="', $incontext['db']['server'], '" size="30" class="input_text" /><br />
 					<div style="font-size: smaller; margin-bottom: 2ex;">', $txt['db_settings_server_info'], '</div>
 				</td>
 			</tr><tr id="db_user_contain">
-				<td valign="top" class="textbox"><label for="db_user_input">', $txt['db_settings_username'], ':</label></td>
+				<td valign="top"><label for="db_user_input">', $txt['db_settings_username'], ':</label></td>
 				<td>
 					<input type="text" name="db_user" id="db_user_input" value="', $incontext['db']['user'], '" size="30" class="input_text" /><br />
 					<div style="font-size: smaller; margin-bottom: 2ex;">', $txt['db_settings_username_info'], '</div>
 				</td>
 			</tr><tr id="db_passwd_contain">
-				<td valign="top" class="textbox"><label for="db_passwd_input">', $txt['db_settings_password'], ':</label></td>
+				<td valign="top"><label for="db_passwd_input">', $txt['db_settings_password'], ':</label></td>
 				<td>
 					<input type="password" name="db_passwd" id="db_passwd_input" value="', $incontext['db']['pass'], '" size="30" class="input_password" /><br />
 					<div style="font-size: smaller; margin-bottom: 2ex;">', $txt['db_settings_password_info'], '</div>
 				</td>
 			</tr><tr id="db_name_contain">
-				<td valign="top" class="textbox"><label for="db_name_input">', $txt['db_settings_database'], ':</label></td>
+				<td valign="top"><label for="db_name_input">', $txt['db_settings_database'], ':</label></td>
 				<td>
 					<input type="text" name="db_name" id="db_name_input" value="', empty($incontext['db']['name']) ? 'smf' : $incontext['db']['name'], '" size="30" class="input_text" /><br />
 					<div style="font-size: smaller; margin-bottom: 2ex;">', $txt['db_settings_database_info'], '
 					<span id="db_name_info_warning">', $txt['db_settings_database_info_note'], '</span></div>
 				</td>
 			</tr><tr id="db_filename_contain" style="display: none;">
-				<td valign="top" class="textbox"><label for="db_filename_input">', $txt['db_settings_database_file'], ':</label></td>
+				<td valign="top"><label for="db_filename_input">', $txt['db_settings_database_file'], ':</label></td>
 				<td>
 					<input type="text" name="db_filename" id="db_filename_input" value="', empty($incontext['db']['name']) ? dirname(__FILE__) . '/smf_' . substr(md5(microtime()), 0, 10) : stripslashes($incontext['db']['name']), '" size="30" class="input_text" /><br />
 					<div style="font-size: smaller; margin-bottom: 2ex;">', $txt['db_settings_database_file_info'], '</div>
 				</td>
 			</tr><tr>
-				<td valign="top" class="textbox"><label for="db_prefix_input">', $txt['db_settings_prefix'], ':</label></td>
+				<td valign="top"><label for="db_prefix_input">', $txt['db_settings_prefix'], ':</label></td>
 				<td>
 					<input type="text" name="db_prefix" id="db_prefix_input" value="', $incontext['db']['prefix'], '" size="30" class="input_text" /><br />
 					<div style="font-size: smaller; margin-bottom: 2ex;">', $txt['db_settings_prefix_info'], '</div>
@@ -2298,7 +2292,7 @@ function template_database_settings()
 
 	// Allow the toggling of input boxes for SQLite etc.
 	echo '
-	<script type="text/javascript"><!-- // --><![CDATA[
+	<script><!-- // --><![CDATA[
 		function toggleDBInput()
 		{
 			// What state is it?';
@@ -2342,43 +2336,43 @@ function template_forum_settings()
 	template_warning_divs();
 
 	echo '
-		<table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin: 1em 0;">
+		<table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin: 1em 0;" class="table">
 			<tr>
-				<td width="20%" valign="top" class="textbox"><label for="mbname_input">', $txt['install_settings_name'], ':</label></td>
+				<td width="20%" valign="top"><label for="mbname_input">', $txt['install_settings_name'], ':</label></td>
 				<td>
 					<input type="text" name="mbname" id="mbname_input" value="', $txt['install_settings_name_default'], '" size="65" class="input_text" />
 					<div style="font-size: smaller; margin-bottom: 2ex;">', $txt['install_settings_name_info'], '</div>
 				</td>
 			</tr><tr>
-				<td valign="top" class="textbox"><label for="boardurl_input">', $txt['install_settings_url'], ':</label></td>
+				<td valign="top"><label for="boardurl_input">', $txt['install_settings_url'], ':</label></td>
 				<td>
 					<input type="text" name="boardurl" id="boardurl_input" value="', $incontext['detected_url'], '" size="65" class="input_text" /><br />
 					<div style="font-size: smaller; margin-bottom: 2ex;">', $txt['install_settings_url_info'], '</div>
 				</td>
 			</tr><tr>
-				<td valign="top" class="textbox">', $txt['install_settings_compress'], ':</td>
+				<td valign="top">', $txt['install_settings_compress'], ':</td>
 				<td>
-					<input type="checkbox" name="compress" id="compress_check" checked="checked" class="input_check" /> <label for="compress_check">', $txt['install_settings_compress_title'], '</label><br />
+					<label for="compress_check" class="checkbox"><input type="checkbox" name="compress" id="compress_check" checked="checked" class="input_check"  />', $txt['install_settings_compress_title'], '</label><br />
 					<div style="font-size: smaller; margin-bottom: 2ex;">', $txt['install_settings_compress_info'], '</div>
 				</td>
 			</tr><tr>
-				<td valign="top" class="textbox">', $txt['install_settings_dbsession'], ':</td>
+				<td valign="top">', $txt['install_settings_dbsession'], ':</td>
 				<td>
-					<input type="checkbox" name="dbsession" id="dbsession_check" checked="checked" class="input_check" /> <label for="dbsession_check">', $txt['install_settings_dbsession_title'], '</label><br />
+					<label for="dbsession_check" class="checkbox"><input type="checkbox" name="dbsession" id="dbsession_check" checked="checked" class="input_check"  />', $txt['install_settings_dbsession_title'], '</label><br />
 					<div style="font-size: smaller; margin-bottom: 2ex;">', $incontext['test_dbsession'] ? $txt['install_settings_dbsession_info1'] : $txt['install_settings_dbsession_info2'], '</div>
 				</td>
 			</tr>
 			<tr>
-				<td valign="top" class="textbox">', $txt['install_settings_utf8'], ':</td>
+				<td valign="top">', $txt['install_settings_utf8'], ':</td>
 				<td>
-					<input type="checkbox" name="utf8" id="utf8_check"', $incontext['utf8_default'] ? ' checked="checked"' : '', ' class="input_check"', $incontext['utf8_required'] ? ' disabled="disabled"' : '', ' /> <label for="utf8_check">', $txt['install_settings_utf8_title'], '</label><br />
+					<label for="utf8_check" class="checkbox"><input type="checkbox" name="utf8" id="utf8_check"', $incontext['utf8_default'] ? ' checked="checked"' : '', ' class="input_check"', $incontext['utf8_required'] ? ' disabled="disabled"' : '', '  />', $txt['install_settings_utf8_title'], '</label><br />
 					<div style="font-size: smaller; margin-bottom: 2ex;">', $txt['install_settings_utf8_info'], '</div>
 				</td>
 			</tr>
 			<tr>
-				<td valign="top" class="textbox">', $txt['install_settings_stats'], ':</td>
+				<td valign="top">', $txt['install_settings_stats'], ':</td>
 				<td>
-					<input type="checkbox" name="stats" id="stats_check" class="input_check" /> <label for="stats_check">', $txt['install_settings_stats_title'], '</label><br />
+					<label for="stats_check" class="checkbox"><input type="checkbox" name="stats" id="stats_check" class="input_check"  />', $txt['install_settings_stats_title'], '</label><br />
 					<div style="font-size: smaller; margin-bottom: 2ex;">', $txt['install_settings_stats_info'], '</div>
 				</td>
 			</tr>
@@ -2439,25 +2433,25 @@ function template_admin_account()
 	echo '
 		<table width="100%" cellspacing="0" cellpadding="0" border="0" style="margin: 2em 0;">
 			<tr>
-				<td width="18%" valign="top" class="textbox"><label for="username">', $txt['user_settings_username'], ':</label></td>
+				<td width="18%" valign="top"><label for="username">', $txt['user_settings_username'], ':</label></td>
 				<td>
 					<input type="text" name="username" id="username" value="', $incontext['username'], '" size="40" class="input_text" />
 					<div style="font-size: smaller; margin-bottom: 2ex;">', $txt['user_settings_username_info'], '</div>
 				</td>
 			</tr><tr>
-				<td valign="top" class="textbox"><label for="password1">', $txt['user_settings_password'], ':</label></td>
+				<td valign="top"><label for="password1">', $txt['user_settings_password'], ':</label></td>
 				<td>
 					<input type="password" name="password1" id="password1" size="40" class="input_password" />
 					<div style="font-size: smaller; margin-bottom: 2ex;">', $txt['user_settings_password_info'], '</div>
 				</td>
 			</tr><tr>
-				<td valign="top" class="textbox"><label for="password2">', $txt['user_settings_again'], ':</label></td>
+				<td valign="top"><label for="password2">', $txt['user_settings_again'], ':</label></td>
 				<td>
 					<input type="password" name="password2" id="password2" size="40" class="input_password" />
 					<div style="font-size: smaller; margin-bottom: 2ex;">', $txt['user_settings_again_info'], '</div>
 				</td>
 			</tr><tr>
-				<td valign="top" class="textbox"><label for="email">', $txt['user_settings_email'], ':</label></td>
+				<td valign="top"><label for="email">', $txt['user_settings_email'], ':</label></td>
 				<td>
 					<input type="text" name="email" id="email" value="', $incontext['email'], '" size="40" class="input_text" />
 					<div style="font-size: smaller; margin-bottom: 2ex;">', $txt['user_settings_email_info'], '</div>
@@ -2497,7 +2491,7 @@ function template_delete_install()
 		<div style="margin: 1ex; font-weight: bold;">
 			<label for="delete_self"><input type="checkbox" id="delete_self" onclick="doTheDelete();" class="input_check" /> ', $txt['delete_installer'], !isset($_SESSION['installer_temp_ftp']) ? ' ' . $txt['delete_installer_maybe'] : '', '</label>
 		</div>
-		<script type="text/javascript"><!-- // --><![CDATA[
+		<script><!-- // --><![CDATA[
 			function doTheDelete()
 			{
 				var theCheck = document.getElementById ? document.getElementById("delete_self") : document.all.delete_self;

@@ -27,11 +27,11 @@
  * @copyright 2012 Simple Machines
  * @license http://www.simplemachines.org/about/smf/license.php BSD
  *
- * @version 2.1 Alpha 1
+ * @version 1.0 Alpha 1
  */
 
 if (!defined('SMF'))
-	die('Hacking attempt...');
+	die('No direct access...'); 
 
 /**
  * Subaction handler - manages the action and delegates control to the proper
@@ -899,16 +899,6 @@ function RemoveTheme()
 
 	$smcFunc['db_query']('', '
 		UPDATE {db_prefix}members
-		SET id_theme = {int:default_theme}
-		WHERE id_theme = {int:current_theme}',
-		array(
-			'default_theme' => 0,
-			'current_theme' => $_GET['th'],
-		)
-	);
-
-	$smcFunc['db_query']('', '
-		UPDATE {db_prefix}boards
 		SET id_theme = {int:default_theme}
 		WHERE id_theme = {int:current_theme}',
 		array(

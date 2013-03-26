@@ -7,7 +7,7 @@
  * @copyright 2012 Simple Machines
  * @license http://www.simplemachines.org/about/smf/license.php BSD
  *
- * @version 2.1 Alpha 1
+ * @version 1.0 Alpha 1
  */
 
 /**
@@ -23,20 +23,10 @@ function template_registration_agreement()
 			<div class="roundframe">
 				<p>', $context['agreement'], '</p>
 			</div>
-			<div id="confirm_buttons">';
-
-	// Age restriction in effect?
-	if ($context['show_coppa'])
-		echo '
-				<input type="submit" name="accept_agreement" value="', $context['coppa_agree_above'], '" class="button_submit" /><br /><br />
-				<input type="submit" name="accept_agreement_coppa" value="', $context['coppa_agree_below'], '" class="button_submit" />';
-	else
-		echo '
-				<input type="submit" name="accept_agreement" value="', $txt['agreement_agree'], '" class="button_submit" />';
-
-	echo '
-			<input type="hidden" name="', $context['session_var'], '" value="', $context['session_id'], '" />
-			<input type="hidden" name="', $context['register_token_var'], '" value="', $context['register_token'], '" />
+			<div id="confirm_buttons">
+                            <input type="submit" name="accept_agreement" value="', $txt['agreement_agree'], '" class="button_submit" />
+                            <input type="hidden" name="', $context['session_var'], '" value="', $context['session_id'], '" />
+                            <input type="hidden" name="', $context['register_token_var'], '" value="', $context['register_token'], '" />
 			</div>
 			<input type="hidden" name="step" value="1" />
 		</form>';
@@ -49,8 +39,8 @@ function template_registration_form()
 	global $context, $settings, $options, $scripturl, $txt, $modSettings;
 
 	echo '
-		<script type="text/javascript" src="', $settings['default_theme_url'], '/scripts/register.js"></script>
-		<script type="text/javascript"><!-- // --><![CDATA[
+		<script src="', $settings['default_theme_url'], '/scripts/register.js"></script>
+		<script><!-- // --><![CDATA[
 			function verifyAgree()
 			{
 				if (currentAuthMethod == \'passwd\' && document.forms.registration.smf_autov_pwmain.value != document.forms.registration.smf_autov_pwverify.value)
@@ -290,23 +280,14 @@ function template_registration_form()
 	}
 
 	echo '
-			<div id="confirm_buttons flow_auto">';
-
-	// Age restriction in effect?
-	if (!$context['require_agreement'] && $context['show_coppa'])
-		echo '
-				<input type="submit" name="accept_agreement" value="', $context['coppa_agree_above'], '" class="button_submit" /><br /><br />
-				<input type="submit" name="accept_agreement_coppa" value="', $context['coppa_agree_below'], '" class="button_submit" />';
-	else
-		echo '
-				<input type="submit" name="regSubmit" value="', $txt['register'], '" tabindex="', $context['tabindex']++, '" class="button_submit" />';
-	echo '
+			<div id="confirm_buttons flow_auto">
+                            <input type="submit" name="regSubmit" value="', $txt['register'], '" tabindex="', $context['tabindex']++, '" class="button_submit" />
 			</div>
 			<input type="hidden" name="', $context['session_var'], '" value="', $context['session_id'], '" />
 			<input type="hidden" name="', $context['register_token_var'], '" value="', $context['register_token'], '" />
 			<input type="hidden" name="step" value="2" />
 		</form>
-		<script type="text/javascript"><!-- // --><![CDATA[
+		<script><!-- // --><![CDATA[
 			var regTextStrings = {
 				"username_valid": "', $txt['registration_username_available'], '",
 				"username_invalid": "', $txt['registration_username_unavailable'], '",
@@ -336,86 +317,6 @@ function template_after()
 				<p class="content">', $context['description'], '</p>
 			</div>
 		</div>';
-}
-
-// Template for giving instructions about COPPA activation.
-function template_coppa()
-{
-	global $context, $settings, $options, $txt, $scripturl;
-
-	// Formulate a nice complicated message!
-	echo '
-			<div class="title_bar">
-				<h3 class="titlebg">', $context['page_title'], '</h3>
-			</div>
-			<div class="windowbg2">
-				<div class="content">
-					<p>', $context['coppa']['body'], '</p>
-					<p>
-						<span><a href="', $scripturl, '?action=coppa;form;member=', $context['coppa']['id'], '" target="_blank" class="new_win">', $txt['coppa_form_link_popup'], '</a> | <a href="', $scripturl, '?action=coppa;form;dl;member=', $context['coppa']['id'], '">', $txt['coppa_form_link_download'], '</a></span>
-					</p>
-					<p>', $context['coppa']['many_options'] ? $txt['coppa_send_to_two_options'] : $txt['coppa_send_to_one_option'], '</p>';
-
-	// Can they send by post?
-	if (!empty($context['coppa']['post']))
-	{
-		echo '
-					<h4>1) ', $txt['coppa_send_by_post'], '</h4>
-					<div class="coppa_contact">
-						', $context['coppa']['post'], '
-					</div>';
-	}
-
-	// Can they send by fax??
-	if (!empty($context['coppa']['fax']))
-	{
-		echo '
-					<h4>', !empty($context['coppa']['post']) ? '2' : '1', ') ', $txt['coppa_send_by_fax'], '</h4>
-					<div class="coppa_contact">
-						', $context['coppa']['fax'], '
-					</div>';
-	}
-
-	// Offer an alternative Phone Number?
-	if ($context['coppa']['phone'])
-	{
-		echo '
-					<p>', $context['coppa']['phone'], '</p>';
-	}
-	echo '
-				</div>
-			</div>';
-}
-
-// An easily printable form for giving permission to access the forum for a minor.
-function template_coppa_form()
-{
-	global $context, $settings, $options, $txt, $scripturl;
-
-	// Show the form (As best we can)
-	echo '
-		<table border="0" width="100%" cellpadding="3" cellspacing="0" class="tborder" align="center">
-			<tr>
-				<td align="left">', $context['forum_contacts'], '</td>
-			</tr><tr>
-				<td align="right">
-					<em>', $txt['coppa_form_address'], '</em>: ', $context['ul'], '<br />
-					', $context['ul'], '<br />
-					', $context['ul'], '<br />
-					', $context['ul'], '
-				</td>
-			</tr><tr>
-				<td align="right">
-					<em>', $txt['coppa_form_date'], '</em>: ', $context['ul'], '
-					<br /><br />
-				</td>
-			</tr><tr>
-				<td align="left">
-					', $context['coppa_body'], '
-				</td>
-			</tr>
-		</table>
-		<br />';
 }
 
 // Show a window containing the spoken verification code.

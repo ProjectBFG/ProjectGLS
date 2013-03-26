@@ -10,11 +10,11 @@
  * @copyright 2012 Simple Machines
  * @license http://www.simplemachines.org/about/smf/license.php BSD
  *
- * @version 2.1 Alpha 1
+ * @version 1.0 Alpha 1
  */
 
 if (!defined('SMF'))
-	die('Hacking attempt...');
+	die('No direct access...'); 
 
 /**
  * The main entrance point for the Manage Members screen.
@@ -184,10 +184,8 @@ function ViewMemberlist()
 		$request = $smcFunc['db_query']('', '
 			SELECT id_group, group_name, min_posts
 			FROM {db_prefix}membergroups
-			WHERE id_group != {int:moderator_group}
 			ORDER BY min_posts, CASE WHEN id_group < {int:newbie_group} THEN id_group ELSE 4 END, group_name',
 			array(
-				'moderator_group' => 3,
 				'newbie_group' => 4,
 			)
 		);
@@ -635,10 +633,8 @@ function SearchMembers()
 	$request = $smcFunc['db_query']('', '
 		SELECT id_group, group_name, min_posts
 		FROM {db_prefix}membergroups
-		WHERE id_group != {int:moderator_group}
 		ORDER BY min_posts, CASE WHEN id_group < {int:newbie_group} THEN id_group ELSE 4 END, group_name',
 		array(
-			'moderator_group' => 3,
 			'newbie_group' => 4,
 		)
 	);

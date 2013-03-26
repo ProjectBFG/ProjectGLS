@@ -11,11 +11,11 @@
  * @copyright 2012 Simple Machines
  * @license http://www.simplemachines.org/about/smf/license.php BSD
  *
- * @version 2.1 Alpha 1
+ * @version 1.0 Alpha 1
  */
 
 if (!defined('SMF'))
-	die('Hacking attempt...');
+	die('No direct access...'); 
 
 /**
  * Ask them for their login information. (shows a page for the user to type
@@ -43,7 +43,7 @@ function Login()
 	$context['never_expire'] = false;
 
 	// Set the login URL - will be used when the login process is done.
-	if (isset($_SESSION['old_url']) && preg_match('~(board|topic)[=,]~', $_SESSION['old_url']) != 0)
+	if (isset($_SESSION['old_url']) && preg_match('~(topic)[=,]~', $_SESSION['old_url']) != 0)
 		$_SESSION['login_url'] = $_SESSION['old_url'];
 	else
 		unset($_SESSION['login_url']);
@@ -129,7 +129,7 @@ function Login2()
 	spamProtection('login');
 
 	// Set the login_url if it's not already set.
-	if ((empty($_SESSION['login_url']) && isset($_SESSION['old_url']) && preg_match('~(board|topic)[=,]~', $_SESSION['old_url']) != 0) || (isset($_GET['quicklogin']) && isset($_SESSION['old_url']) && strpos($_SESSION['old_url'], 'login') === false))
+	if ((empty($_SESSION['login_url']) && isset($_SESSION['old_url']) && preg_match('~(topic)[=,]~', $_SESSION['old_url']) != 0) || (isset($_GET['quicklogin']) && isset($_SESSION['old_url']) && strpos($_SESSION['old_url'], 'login') === false))
 		$_SESSION['login_url'] = $_SESSION['old_url'];
 
 	// Been guessing a lot, haven't we?
@@ -401,14 +401,8 @@ function checkActivation()
 	// What is the true activation status of this account?
 	$activation_status = $user_settings['is_activated'] > 10 ? $user_settings['is_activated'] - 10 : $user_settings['is_activated'];
 
-	// Check if the account is activated - COPPA first...
-	if ($activation_status == 5)
-	{
-		$context['login_errors'][] = $txt['coppa_no_concent'] . ' <a href="' . $scripturl . '?action=coppa;member=' . $user_settings['id_member'] . '">' . $txt['coppa_need_more_details'] . '</a>';
-		return false;
-	}
 	// Awaiting approval still?
-	elseif ($activation_status == 3)
+        if ($activation_status == 3)
 		fatal_lang_error('still_awaiting_approval', 'user');
 	// Awaiting deletion, changed their mind?
 	elseif ($activation_status == 4)

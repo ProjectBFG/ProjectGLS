@@ -12,11 +12,11 @@
  * @copyright 2012 Simple Machines
  * @license http://www.simplemachines.org/about/smf/license.php BSD
  *
- * @version 2.1 Alpha 1
+ * @version 1.0 Alpha 1
  */
 
 if (!defined('SMF'))
-	die('Hacking attempt...');
+	die('No direct access...'); 
 
 /**
  * Allow the change or view of profiles...
@@ -221,18 +221,6 @@ function ModifyProfile($post_errors = array())
 					'token' => 'profile-pm%u',
 					'permission' => array(
 						'own' => array('pm_read'),
-						'any' => array('profile_extra_any'),
-					),
-				),
-				'ignoreboards' => array(
-					'label' => $txt['ignoreboards'],
-					'file' => 'Profile-Modify.php',
-					'function' => 'ignoreboards',
-					'enabled' => !empty($modSettings['allow_ignore_boards']),
-					'sc' => 'post',
-					'token' => 'profile-ib%u',
-					'permission' => array(
-						'own' => array('profile_extra_any', 'profile_extra_own'),
 						'any' => array('profile_extra_any'),
 					),
 				),

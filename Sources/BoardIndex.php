@@ -11,11 +11,11 @@
  * @copyright 2012 Simple Machines
  * @license http://www.simplemachines.org/about/smf/license.php BSD
  *
- * @version 2.1 Alpha 1
+ * @version 1.0 Alpha 1
  */
 
 if (!defined('SMF'))
-	die('Hacking attempt...');
+	die('No direct access...'); 
 
 /**
  * This function shows the board index.
@@ -35,17 +35,6 @@ function BoardIndex()
 	// Do not let search engines index anything if there is a random thing in $_GET.
 	if (!empty($_GET))
 		$context['robot_no_index'] = true;
-
-	// Retrieve the categories and boards.
-	require_once($sourcedir . '/Subs-BoardIndex.php');
-	$boardIndexOptions = array(
-		'include_categories' => true,
-		'base_level' => 0,
-		'parent_id' => 0,
-		'set_latest_post' => true,
-		'countChildPosts' => !empty($modSettings['countChildPosts']),
-	);
-	$context['categories'] = getBoardIndex($boardIndexOptions);
 
 	// Get the user online list.
 	require_once($sourcedir . '/Subs-MembersOnline.php');
@@ -72,8 +61,10 @@ function BoardIndex()
 		$latestPostOptions = array(
 			'number_posts' => $settings['number_recent_posts'],
 		);
-		$context['latest_posts'] = cache_quick_get('boardindex-latest_posts:' . md5($user_info['query_wanna_see_board'] . $user_info['language']), 'Subs-Recent.php', 'cache_getLastPosts', array($latestPostOptions));
+		$context['latest_posts'] = cache_quick_get('boardindex-latest_posts:' . md5($user_info['language']), 'Subs-Recent.php', 'cache_getLastPosts', array($latestPostOptions));
 	}
+	
+	$context['latest_topics'] = cache_quick_get('boardindex-latest_topics:' . md5($user_info['language']), 'Subs-Recent.php', 'cache_getLastTopics', array(50));
 
 	$settings['display_recent_bar'] = !empty($settings['number_recent_posts']) ? $settings['number_recent_posts'] : 0;
 	$settings['show_member_bar'] &= allowedTo('view_mlist');
@@ -83,40 +74,13 @@ function BoardIndex()
 
 	$context['page_title'] = sprintf($txt['forum_index'], $context['forum_name']);
 
-	// Mark read button
-	$context['mark_read_button'] = array(
-		'markread' => array('text' => 'mark_as_read', 'image' => 'markread.png', 'lang' => true, 'url' => $scripturl . '?action=markasread;sa=all;' . $context['session_var'] . '=' . $context['session_id']),
+	$context['can_post_new'] = allowedTo('post_new') || ($modSettings['postmod_active'] && allowedTo('post_unapproved_topics'));
+	$context['new_topic'] = array(
+		'new_topic' => array('test' => 'can_post_new', 'text' => 'new_topic', 'image' => 'new_topic.png', 'lang' => true, 'url' => $scripturl . '?action=post', 'active' => true),
 	);
 
 	// Allow mods to add additional buttons here
 	call_integration_hook('integrate_mark_read_button');
-}
-
-/**
- * Collapse or expand a category
- */
-function CollapseCategory()
-{
-	global $user_info, $sourcedir, $context;
-
-	// Just in case, no need, no need.
-	$context['robot_no_index'] = true;
-
-	checkSession('request');
-
-	if (!isset($_GET['sa']))
-		fatal_lang_error('no_access', false);
-
-	// Check if the input values are correct.
-	if (in_array($_REQUEST['sa'], array('expand', 'collapse', 'toggle')) && isset($_REQUEST['c']))
-	{
-		// And collapse/expand/toggle the category.
-		require_once($sourcedir . '/Subs-Categories.php');
-		collapseCategories(array((int) $_REQUEST['c']), $_REQUEST['sa'], array($user_info['id']));
-	}
-
-	// And go back to the board index.
-	BoardIndex();
 }
 
 ?>

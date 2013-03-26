@@ -17,7 +17,7 @@
  * @copyright 2012 Simple Machines
  * @license http://www.simplemachines.org/about/smf/license.php BSD
  *
- * @version 2.1 Alpha 1
+ * @version 1.0 Alpha 1
  */
 
 $forum_version = 'ProjectGLS 0.1 Alpha 1';
@@ -82,6 +82,7 @@ require_once($sourcedir . '/Errors.php');
 require_once($sourcedir . '/Logging.php');
 require_once($sourcedir . '/Security.php');
 require_once($sourcedir . '/Class-BrowserDetect.php');
+require_once($sourcedir . '/Like.php');
 
 // Using an pre-PHP 5.1 version?
 if (version_compare(PHP_VERSION, '5.1', '<'))
@@ -118,7 +119,7 @@ obExit(null, null, true);
  */
 function smf_main()
 {
-	global $modSettings, $settings, $user_info, $board, $topic, $board_info, $maintenance, $sourcedir;
+	global $modSettings, $settings, $user_info, $topic, $maintenance, $sourcedir;
 
 	// Special case: session keep-alive, output a transparent pixel.
 	if (isset($_GET['action']) && $_GET['action'] == 'keepalive')
@@ -130,11 +131,10 @@ function smf_main()
 	// Load the user's cookie (or set as guest) and load their settings.
 	loadUserSettings();
 
-	// Load the current board's information.
-	loadBoard();
-
 	// Load the current user's permissions.
 	loadPermissions();
+	
+	loadBoard();
 
 	// if (!empty($modSettings['allow_guestAccess']) && $user_info['is_guest'])
 		// detectBrowser();
@@ -146,8 +146,8 @@ function smf_main()
 	is_not_banned();
 
 	// If we are in a topic and don't have permission to approve it then duck out now.
-	if (!empty($topic) && empty($board_info['cur_topic_approved']) && !allowedTo('approve_posts') && ($user_info['id'] != $board_info['cur_topic_starter'] || $user_info['is_guest']))
-		fatal_lang_error('not_a_topic', false);
+	// if (!empty($topic) && !allowedTo('approve_posts') && $user_info['is_guest'])
+		// fatal_lang_error('not_a_topic', false);
 
 	$no_stat_actions = array('findmember', 'jsoption', 'requestmembers', 'smstats', '.xml', 'xmlhttp', 'verificationcode', 'viewquery', 'viewsmfile');
 	call_integration_hook('integrate_pre_log_stats', array($no_stat_actions));
@@ -180,15 +180,15 @@ function smf_main()
 		}
 	}
 	// If guest access is off, a guest can only do one of the very few following actions.
-	elseif (empty($modSettings['allow_guestAccess']) && $user_info['is_guest'] && (!isset($_REQUEST['action']) || !in_array($_REQUEST['action'], array('coppa', 'login', 'login2', 'register', 'register2', 'reminder', 'activate', 'smstats', 'mailq', 'verificationcode'))))
+	elseif (empty($modSettings['allow_guestAccess']) && $user_info['is_guest'] && (!isset($_REQUEST['action']) || !in_array($_REQUEST['action'], array('login', 'login2', 'register', 'register2', 'reminder', 'activate', 'smstats', 'mailq', 'verificationcode'))))
 	{
 		require_once($sourcedir . '/Subs-Auth.php');
 		return 'KickGuest';
 	}
 	elseif (empty($_REQUEST['action']))
 	{
-		// Action and board are both empty... BoardIndex! Unless someone else wants to do something different.
-		if (empty($board) && empty($topic))
+		// Action is empty... BoardIndex! Unless someone else wants to do something different.
+		if (empty($topic))
 		{
 			$defaultActions = call_integration_hook('integrate_default_action');
 			foreach ($defaultActions as $defaultAction)
@@ -202,13 +202,7 @@ function smf_main()
 
 			return 'BoardIndex';
 		}
-		// Topic is empty, and action is empty.... MessageIndex!
-		elseif (empty($topic))
-		{
-			require_once($sourcedir . '/MessageIndex.php');
-			return 'MessageIndex';
-		}
-		// Board is not empty... topic is not empty... action is empty.. Display!
+		// Topic is not empty... action is empty.. Display!
 		else
 		{
 			require_once($sourcedir . '/Display.php');
@@ -223,8 +217,6 @@ function smf_main()
 		'announce' => array('Post.php', 'AnnounceTopic'),
 		'blog' => array('Blog.php', 'BlogMain'),
 		'buddy' => array('Subs-Members.php', 'BuddyListToggle'),
-		'collapse' => array('BoardIndex.php', 'CollapseCategory'),
-		'coppa' => array('Register.php', 'CoppaForm'),
 		'credits' => array('Who.php', 'Credits'),
 		'deletemsg' => array('RemoveTopic.php', 'DeleteMessage'),
 		'disregardtopic' => array('Notify.php', 'TopicDisregard'),
@@ -238,13 +230,10 @@ function smf_main()
 		'login' => array('LogInOut.php', 'Login'),
 		'login2' => array('LogInOut.php', 'Login2'),
 		'logout' => array('LogInOut.php', 'Logout'),
-		'markasread' => array('Subs-Boards.php', 'MarkRead'),
 		'mergetopics' => array('SplitTopics.php', 'MergeTopics'),
 		'mlist' => array('Memberlist.php', 'Memberlist'),
 		'moderate' => array('ModerationCenter.php', 'ModerationMain'),
-		'modifycat' => array('ManageBoards.php', 'ModifyCat'),
 		'notify' => array('Notify.php', 'Notify'),
-		'notifyboard' => array('Notify.php', 'BoardNotify'),
 		'pm' => array('PersonalMessage.php', 'MessageMain'),
 		'post' => array('Post.php', 'Post'),
 		'post2' => array('Post.php', 'Post2'),
@@ -252,6 +241,7 @@ function smf_main()
 		'quotefast' => array('Post.php', 'QuoteFast'),
 		'quickmod' => array('MessageIndex.php', 'QuickModeration'),
 		'quickmod2' => array('Display.php', 'QuickInTopicModeration'),
+		'like' => array('Like.php', 'Like'),
 		'recent' => array('Recent.php', 'RecentPosts'),
 		'register' => array('Register.php', 'Register'),
 		'register2' => array('Register.php', 'Register2'),

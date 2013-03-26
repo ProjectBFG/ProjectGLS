@@ -7,7 +7,7 @@
  * @copyright 2012 Simple Machines
  * @license http://www.simplemachines.org/about/smf/license.php BSD
  *
- * @version 2.1 Alpha 1
+ * @version 1.0 Alpha 1
  */
 
 function template_main()
@@ -40,12 +40,11 @@ function template_main()
 					', $context['page_index'], '
 			</div>';
 
-	// Show the topic information - icon, subject, etc.
+	// Show the topic information - subject, etc.
 	echo '
 			<div id="forumposts">
 					<h3 class="catbg">
 						', $txt['topic'], ': ', $context['subject'], '&nbsp;<span>(', $context['num_views_text'], ')</span>
-						<span class="nextlinks floatright">', $context['previous_next'], '</span>
 					</h3>';
 	if (!empty($settings['display_who_viewing']))
 	{
@@ -94,9 +93,6 @@ function template_main()
 
 			echo '
 						<div class="keyinfo">
-							<div class="messageicon" ', ($message['icon_url'] !== $settings['images_url'] . '/post/xx.png') ? '' : 'style="position: absolute; z-index: -1;"', '>
-								<img src="', $message['icon_url'] . '" alt=""', $message['can_modify'] ? ' id="msg_icon_' . $message['id'] . '"' : '', ' />
-							</div>
 							<h5 id="subject_', $message['id'], '">
 								<a href="', $message['href'], '" rel="nofollow" title="', !empty($message['counter']) ? sprintf($txt['reply_number'], $message['counter']) : '', ' - ', $message['subject'], '">', $message['time'], '</a>';
 
@@ -147,20 +143,23 @@ function template_main()
 						</div>';
 						
 		// Show the quickbuttons, for various operations on posts.
-		if ($message['can_approve'] || $context['can_reply'] || $message['can_modify'] || $message['can_remove'] || $context['can_split'] || $context['can_restore_msg'])
+		// if ($message['can_approve'] || $context['can_reply'] || $message['can_modify'] || $message['can_remove'] || $context['can_split'] || $context['can_restore_msg'])
+		if ($message['can_approve'] || $context['can_reply'] || $message['can_modify'] || $message['can_remove'] || $context['can_split'])
 			echo '
 						<div class="btn-toolbar">
-							<div class="btn-group pull-right">';
+							<div class="btn-group pull-right">
+							
+								<span class="btn" id="like_post_', $message['id'], '" onclick="like(', $message['id'], ')"><i class="icon-thumbs-up"></i></span>';
 
 		// Can they reply? Have they turned on quick reply?
-		if ($context['can_quote'] && !empty($options['display_quick_reply']))
+		// if ($context['can_quote'] && !empty($options['display_quick_reply']))
 			echo '
 								<a class="btn" href="', $scripturl, '?action=post;quote=', $message['id'], ';topic=', $context['current_topic'], '.', $context['start'], ';last_msg=', $context['topic_last_message'], '" onclick="return oQuickReply.quote(', $message['id'], ');">', $txt['quote'], '</a>';
 
 		// So... quick reply is off, but they *can* reply?
-		elseif ($context['can_quote'])
-			echo '
-								<a class="btn" href="', $scripturl, '?action=post;quote=', $message['id'], ';topic=', $context['current_topic'], '.', $context['start'], ';last_msg=', $context['topic_last_message'], '">', $txt['quote'], '</a>';
+		// elseif ($context['can_quote'])
+			// echo '
+								// <a class="btn" href="', $scripturl, '?action=post;quote=', $message['id'], ';topic=', $context['current_topic'], '.', $context['start'], ';last_msg=', $context['topic_last_message'], '">', $txt['quote'], '</a>';
 
 		// Can the user modify the contents of this post?  Show the modify inline image.
 		if ($message['can_modify'])
@@ -168,7 +167,8 @@ function template_main()
 								<span class="btn"><img src="', $settings['images_url'], '/icons/modify_inline.png" alt="', $txt['modify_msg'], '" title="', $txt['modify_msg'], '" class="modifybutton" id="modify_button_', $message['id'], '" style="cursor: pointer; margin: 0;" onclick="oQuickModify.modifyMsg(\'', $message['id'], '\')" />', $txt['quick_edit'], '</span>';
 							
 		// Can the user modify the contents of this post?
-		if ($message['can_modify'] || $message['can_remove'] || ($context['can_split'] && !empty($context['real_num_replies'])) || $context['can_restore_msg'] || $message['can_approve'] || $message['can_unapprove'])
+		// if ($message['can_modify'] || $message['can_remove'] || ($context['can_split'] && !empty($context['real_num_replies'])) || $context['can_restore_msg'] || $message['can_approve'] || $message['can_unapprove'])
+		if ($message['can_modify'] || $message['can_remove'] || ($context['can_split'] && !empty($context['real_num_replies'])) || $message['can_approve'] || $message['can_unapprove'])
 			echo '
 								<a class="btn dropdown-toggle" data-toggle="dropdown" href="#">', $txt['post_options'], '<span class="caret"></span></a>
 								<ul class="dropdown-menu">';
@@ -189,9 +189,9 @@ function template_main()
 									<li><a href="', $scripturl, '?action=splittopics;topic=', $context['current_topic'], '.0;at=', $message['id'], '" class="split_button">', $txt['split'], '</a></li>';
 
 			// Can we restore topics?
-			if ($context['can_restore_msg'])
-				echo '
-									<li><a href="', $scripturl, '?action=restoretopic;msgs=', $message['id'], ';', $context['session_var'], '=', $context['session_id'], '" class="restore_button">', $txt['restore_message'], '</a></li>';
+			// if ($context['can_restore_msg'])
+				// echo '
+									// <li><a href="', $scripturl, '?action=restoretopic;msgs=', $message['id'], ';', $context['session_var'], '=', $context['session_id'], '" class="restore_button">', $txt['restore_message'], '</a></li>';
 
 			// Maybe we can approve it, maybe we should?
 			if ($message['can_approve'])
@@ -203,7 +203,8 @@ function template_main()
 				echo '
 									<li><a href="', $scripturl, '?action=moderate;area=postmod;sa=approve;topic=', $context['current_topic'], '.', $context['start'], ';msg=', $message['id'], ';', $context['session_var'], '=', $context['session_id'], '"  class="unapprove_button">', $txt['unapprove'], '</a></li>';
 
-			if ($message['can_modify'] || $message['can_remove'] || $context['can_split'] || $context['can_restore_msg'] || $message['can_approve'] || $message['can_unapprove'])
+			// if ($message['can_modify'] || $message['can_remove'] || $context['can_split'] || $context['can_restore_msg'] || $message['can_approve'] || $message['can_unapprove'])
+			if ($message['can_modify'] || $message['can_remove'] || $context['can_split'] || $message['can_approve'] || $message['can_unapprove'])
 				echo '
 								</ul>';
 								
@@ -212,13 +213,32 @@ function template_main()
 			echo '
 								<span class="inline_mod_check" style="display: none;" id="in_topic_mod_check_', $message['id'], '"></span>';
 		
-			if ($message['can_approve'] || $context['can_reply'] || $message['can_modify'] || $message['can_remove'] || $context['can_split'] || $context['can_restore_msg'])
+			// if ($message['can_approve'] || $context['can_reply'] || $message['can_modify'] || $message['can_remove'] || $context['can_split'] || $context['can_restore_msg'])
+			if ($message['can_approve'] || $context['can_reply'] || $message['can_modify'] || $message['can_remove'] || $context['can_split'])
 				echo '
 							</div>
-						</div>';
+						</div>
+						<div class="clearfix"></div>';
 
 		echo '
-						<div class="moderatorbar">';
+						<div class="moderatorbar">
+							<div class="pull-right rating">
+								<div id="like_', $message['id'], '">
+									<div id="like_info_', $message['id'], '"></div>
+									<div id="like_count_', $message['id'], '">', sprintf($txt['like_info_display'], $message['like_count']), '</div>
+									<div id="liked_', $message['id'], '">
+										<ul>';
+						foreach ($message['liked'] as $member)
+						{
+							echo '
+											<li>', $member['link'], '</li>';
+						}
+								echo '
+										</ul>
+									</div>
+								</div>
+							</div>
+							<div class="pull-left">';
 
 		// Are there any custom profile fields for above the signature?
 		if (!empty($message['member']['custom_fields']))
@@ -250,6 +270,7 @@ function template_main()
 							<div class="signature" id="msg_', $message['id'], '_signature"', $ignoring ? ' style="display:none;"' : '', '>', $message['member']['signature'], '</div>';
 
 		echo '
+							</div>
 						</div>
 					</div>
 				</div>
@@ -277,17 +298,17 @@ function template_main()
 			<a id="quickreply"></a>
 			<div class="tborder" id="quickreplybox">
 					<h3 class="catbg">
-						<a href="javascript:oQuickReply.swap();"><img src="', $settings['images_url'], '/', $options['display_quick_reply'] > 1 ? 'collapse' : 'expand', '.png" alt="+" id="quickReplyExpand" class="icon" /></a>
-						<a href="javascript:oQuickReply.swap();">', $txt['quick_reply'], '</a>
+						<span class="icon-arrow-down" data-toggle="collapse" data-target="#quickReplyOptions" id="quickReplyExpand"></span>
+						', $txt['quick_reply'], '
 					</h3>
-				<div id="quickReplyOptions"', $options['display_quick_reply'] > 1 ? '' : ' style="display: none"', '>
+				<div id="quickReplyOptions" class="collapse in">
 					<div class="roundframe">
 						<p class="smalltext lefttext">', $txt['quick_reply_desc'], '</p>
 						', $context['is_locked'] ? '<p class="alert smalltext">' . $txt['quick_reply_warning'] . '</p>' : '',
 						$context['oldTopicError'] ? '<p class="alert smalltext">' . sprintf($txt['error_old_topic'], $modSettings['oldTopicDays']) . '</p>' : '', '
 						', $context['can_reply_approved'] ? '' : '<em>' . $txt['wait_for_approval'] . '</em>', '
 						', !$context['can_reply_approved'] && $context['require_verification'] ? '<br />' : '', '
-						<form action="', $scripturl, '?board=', $context['current_board'], ';action=post2" method="post" accept-charset="', $context['character_set'], '" name="postmodify" id="postmodify" onsubmit="submitonce(this);" style="margin: 0;">
+						<form action="', $scripturl, '?action=post2" method="post" accept-charset="', $context['character_set'], '" name="postmodify" id="postmodify" onsubmit="submitonce(this);" style="margin: 0;">
 							<input type="hidden" name="topic" value="', $context['current_topic'], '" />
 							<input type="hidden" name="subject" value="', $context['response_prefix'], $context['subject'], '" />
 							<input type="hidden" name="icon" value="xx" />
@@ -333,7 +354,7 @@ function template_main()
 
 			echo '
 							', template_control_richedit($context['post_box_name'], 'smileyBox_message', 'bbcBox_message'), '
-							<script type="text/javascript"><!-- // --><![CDATA[
+							<script><!-- // --><![CDATA[
 								function insertQuoteFast(messageid)
 								{
 									if (window.XMLHttpRequest)
@@ -385,15 +406,14 @@ function template_main()
 
 	if (!empty($context['drafts_autosave']) && !empty($options['drafts_autosave_enabled']))
 		echo '
-			<script type="text/javascript" src="', $settings['default_theme_url'], '/scripts/drafts.js?alp21"></script>
-			<script type="text/javascript"><!-- // --><![CDATA[
+			<script src="', $settings['default_theme_url'], '/scripts/drafts.js?alp21"></script>
+			<script><!-- // --><![CDATA[
 				var oDraftAutoSave = new smf_DraftAutoSave({
 					sSelf: \'oDraftAutoSave\',
 					sLastNote: \'draft_lastautosave\',
 					sLastID: \'id_draft\',', !empty($context['post_box_name']) ? '
 					sSceditorID: \'' . $context['post_box_name'] . '\',' : '', '
 					sType: \'', !empty($options['display_quick_reply']) && $options['display_quick_reply'] > 2 ? 'quick' : 'quick', '\',
-					iBoard: ', (empty($context['current_board']) ? 0 : $context['current_board']), ',
 					iFreq: ', (empty($modSettings['masterAutoSaveDraftsDelay']) ? 60000 : $modSettings['masterAutoSaveDraftsDelay'] * 1000), '
 				});
 			// ]]></script>';
@@ -401,11 +421,11 @@ function template_main()
 	if ($context['show_spellchecking'])
 		echo '
 			<form action="', $scripturl, '?action=spellcheck" method="post" accept-charset="', $context['character_set'], '" name="spell_form" id="spell_form" target="spellWindow"><input type="hidden" name="spellstring" value="" /></form>
-				<script type="text/javascript" src="', $settings['default_theme_url'], '/scripts/spellcheck.js"></script>';
+				<script src="', $settings['default_theme_url'], '/scripts/spellcheck.js"></script>';
 
 	echo '
-				<script type="text/javascript" src="', $settings['default_theme_url'], '/scripts/topic.js"></script>
-				<script type="text/javascript"><!-- // --><![CDATA[';
+				<script src="', $settings['default_theme_url'], '/scripts/topic.js"></script>
+				<script><!-- // --><![CDATA[';
 
 	if (!empty($options['display_quick_reply']))
 		echo '
@@ -438,10 +458,10 @@ function template_main()
 						sRemoveButtonLabel: \'', $txt['quickmod_delete_selected'], '\',
 						sRemoveButtonImage: \'delete_selected.png\',
 						sRemoveButtonConfirm: \'', $txt['quickmod_confirm'], '\',
-						bCanRestore: ', $context['can_restore_msg'] ? 'true' : 'false', ',
-						sRestoreButtonLabel: \'', $txt['quick_mod_restore'], '\',
-						sRestoreButtonImage: \'restore_selected.png\',
-						sRestoreButtonConfirm: \'', $txt['quickmod_confirm'], '\',
+						// bCanRestore: ', $context['can_restore_msg'] ? 'true' : 'false', ',
+						// sRestoreButtonLabel: \'', $txt['quick_mod_restore'], '\',
+						// sRestoreButtonImage: \'restore_selected.png\',
+						// sRestoreButtonConfirm: \'', $txt['quickmod_confirm'], '\',
 						bCanSplit: ', $context['can_split'] ? 'true' : 'false', ',
 						sSplitButtonLabel: \'', $txt['quickmod_split_selected'], '\',
 						sSplitButtonImage: \'split_selected.png\',
@@ -474,28 +494,6 @@ function template_main()
 							sTemplateTopSubject: ', JavaScriptEscape($txt['topic'] . ': %subject% &nbsp;(' . $context['num_views_text'] . ')'), ',
 							sErrorBorderStyle: ', JavaScriptEscape('1px solid red'), ($context['can_reply'] && !empty($options['display_quick_reply'])) ? ',
 							sFormRemoveAccessKeys: \'postmodify\'' : '', '
-						});
-
-						aIconLists[aIconLists.length] = new IconList({
-							sBackReference: "aIconLists[" + aIconLists.length + "]",
-							sIconIdPrefix: "msg_icon_",
-							sScriptUrl: smf_scripturl,
-							bShowModify: ', $settings['show_modify'] ? 'true' : 'false', ',
-							iBoardId: ', $context['current_board'], ',
-							iTopicId: ', $context['current_topic'], ',
-							sSessionId: smf_session_id,
-							sSessionVar: smf_session_var,
-							sLabelIconList: "', $txt['message_icon'], '",
-							sBoxBackground: "transparent",
-							sBoxBackgroundHover: "#ffffff",
-							iBoxBorderWidthHover: 1,
-							sBoxBorderColorHover: "#adadad" ,
-							sContainerBackground: "#ffffff",
-							sContainerBorder: "1px solid #adadad",
-							sItemBorder: "1px solid #ffffff",
-							sItemBorderHover: "1px dotted gray",
-							sItemBackground: "transparent",
-							sItemBackgroundHover: "#e0e0f0"
 						});
 					}';
 

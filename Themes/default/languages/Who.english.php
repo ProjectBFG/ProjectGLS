@@ -26,7 +26,6 @@ $txt['whospider_reminder'] = 'Viewing the reminder page.';
 
 $txt['whoall_activate'] = 'Activating their account.';
 $txt['whoall_buddy'] = 'Modifying their buddy list.';
-$txt['whoall_coppa'] = 'Filling out parent/guardian consent form.';
 $txt['whoall_credits'] = 'Viewing credits page.';
 $txt['whoall_emailuser'] = 'Sending email to another member.';
 $txt['whoall_groups'] = 'Viewing the member groups page.';
@@ -51,8 +50,6 @@ $txt['whoall_unread'] = 'Viewing unread topics since their last visit.';
 $txt['whoall_unreadreplies'] = 'Viewing unread replies since their last visit.';
 $txt['whoall_who'] = 'Viewing <a href="' . $scripturl . '?action=who">Who\'s Online</a>.';
 
-$txt['whoall_collapse_collapse'] = 'Collapsing a category.';
-$txt['whoall_collapse_expand'] = 'Expanding a category.';
 $txt['whoall_pm_removeall'] = 'Removing all their messages.';
 $txt['whoall_pm_send'] = 'Sending a message.';
 $txt['whoall_pm_send2'] = 'Sending a message.';

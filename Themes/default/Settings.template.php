@@ -7,7 +7,7 @@
  * @copyright 2012 Simple Machines
  * @license http://www.simplemachines.org/about/smf/license.php BSD
  *
- * @version 2.1 Alpha 1
+ * @version 1.0 Alpha 1
  */
 
 function template_options()
@@ -15,16 +15,6 @@ function template_options()
 	global $context, $settings, $options, $scripturl, $txt;
 
 	$context['theme_options'] = array(
-		array(
-			'id' => 'show_board_desc',
-			'label' => $txt['board_desc_inside'],
-			'default' => true,
-		),
-		array(
-			'id' => 'show_children',
-			'label' => $txt['show_children'],
-			'default' => true,
-		),
 		array(
 			'id' => 'use_sidebar_menu',
 			'label' => $txt['use_sidebar_menu'],
