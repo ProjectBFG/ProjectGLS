@@ -230,10 +230,6 @@ function template_create_list_menu($list_menu, $direction = 'top')
 		);
 	*/
 
-	// Are we using right-to-left orientation?
-	$first = $context['right_to_left'] ? 'last' : 'first';
-	$last = $context['right_to_left'] ? 'first' : 'last';
-
 	// Tabs take preference over buttons in certain cases.
 	if (empty($settings['use_tabs']) && $list_menu['style'] == 'button')
 		$list_menu['style'] = 'tabs';

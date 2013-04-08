@@ -1006,7 +1006,7 @@ function parse_bbc($message, $smileys = true, $cache_id = '', $parse_tags = arra
 				'type' => 'unparsed_equals',
 				'before' => '<bdo dir="$1">',
 				'after' => '</bdo>',
-				'test' => '(rtl|ltr)\]',
+				'test' => '(ltr)\]',
 				'block_level' => true,
 			),
 			array(
