@@ -43,9 +43,7 @@ function template_main()
 			<div class="pagination">
 				<div class="hidden-phone">
 				', template_button_strip($context['normal_buttons'], 'right'), '
-				</div>
-				<div class="visible-desktop">
-				', !empty($modSettings['topbottomEnable']) ? $context['menu_separator'] . '<a href="#bot" class="btn floatleft">' . $txt['go_down'] . '</a>' : '', '
+				', !empty($modSettings['topbottomEnable']) ? $context['menu_separator'] . '<a href="#bot" class="btn pull-left">' . $txt['go_down'] . '</a>' : '', '
 				</div>
 					', $context['page_index'], '
 			</div>';
@@ -126,13 +124,13 @@ function template_main()
 						<div class="tiptop">
 							<div class="pull-left">
 								<a href="', $scripturl, '?action=profile;u=', $message['member']['id'], '">' ,$message['member']['name'], '</a>';
+		echo '
+								(';
 		
 		if (!empty($message['member']['group']))
-			echo '
-								(',$message['member']['group'],',';
+			echo '', $message['member']['group'], ',';
 								
-			echo '							
-							<a href="', $message['href'], '" id="subject_', $message['id'], '" rel="nofollow" title="', !empty($message['counter']) ? sprintf($txt['reply_number'], $message['counter']) : '', ' - ', $message['subject'], '">', $message['time'], '</a>)';
+			echo '<a href="', $message['href'], '" id="subject_', $message['id'], '" rel="nofollow" title="', !empty($message['counter']) ? sprintf($txt['reply_number'], $message['counter']) : '', ' - ', $message['subject'], '">', $message['time'], '</a>)';
 			
 			echo '
 							</div>
@@ -221,7 +219,10 @@ function template_main()
 							<div class="pull-right rating">
 								<div id="like_', $message['id'], '">
 									<div id="like_info_', $message['id'], '"></div>
-									<div id="like_count_', $message['id'], '">', sprintf($txt['like_info_display'], $message['like_count']), '</div>
+									<div id="like_count_', $message['id'], '">', sprintf($txt['like_info_display'], $message['like_count']), '</div>';
+			if (!empty($message['liked']))
+			{
+				echo '
 									<div id="liked_', $message['id'], '">
 										<ul>';
 						foreach ($message['liked'] as $member)
@@ -231,7 +232,9 @@ function template_main()
 						}
 								echo '
 										</ul>
-									</div>
+									</div>';
+			}
+			echo '
 								</div>
 							</div>
 							<div class="pull-left">';
@@ -279,9 +282,9 @@ function template_main()
 
 	// Show the page index... "Pages: [1]".
 	echo '
-			<div class="pagination visible-desktop">
+			<div class="pagination hidden-phone">
 				', template_button_strip($context['normal_buttons'], 'right'), '
-				', !empty($modSettings['topbottomEnable']) ? $context['menu_separator'] . '<a href="#top" class="btn floatleft">' . $txt['go_up'] . '</a>' : '', '
+				', !empty($modSettings['topbottomEnable']) ? $context['menu_separator'] . '<a href="#top" class="btn pull-left">' . $txt['go_up'] . '</a>' : '', '
 				', $context['page_index'], '
 			</div>';
 
