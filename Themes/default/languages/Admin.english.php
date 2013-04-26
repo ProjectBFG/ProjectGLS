@@ -733,4 +733,5 @@ $txt['gls_sidebar'] = 'Sidebar';
 $txt['gls_sidebar_info'] = 'Main page for sidebar options';
 $txt['gls_sidebar_stats'] = 'Show stats';
 $txt['gls_sidebar_online'] = 'Show online members';
+$txt['gls_sidebar_enable'] = 'Enable sidebar';
 ?>

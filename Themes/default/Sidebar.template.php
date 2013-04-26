@@ -16,16 +16,22 @@ function template_main()
 			<div class="content">
 				<dl class="settings">
 					<dt>
+						',$txt['gls_sidebar_enable'],'
+					</dt>
+					<dd>
+						<input type="checkbox" name="options[sidebar_enable]" id="options-sidebar-enable" value="1"', !empty($context['sidebar_settings']['sidebar_enabled']) ? ' checked="checked"' : '', ' class="input_check" />
+					</dd>
+					<dt>
 						',$txt['gls_sidebar_stats'],'
 					</dt>
 					<dd>
-						<input type="checkbox" name="options[sidebar_stats]" id="options-sidebar-stats" value="1"', !empty($modSettings['sidebar_stats']) ? ' checked="checked"' : '', ' class="input_check" />
+						<input type="checkbox" name="options[sidebar_stats]" id="options-sidebar-stats" value="1"', !empty($context['sidebar_settings']['sidebar_stats']) ? ' checked="checked"' : '', ' class="input_check" />
 					</dd>
 					<dt>
 						',$txt['gls_sidebar_online'],'
 					</dt>
 					<dd>
-						<input type="checkbox" name="options[sidebar_online]" id="options-sidebar-online" value="1"', !empty($modSettings['sidebar_online']) ? ' checked="checked"' : '', ' class="input_check" />
+						<input type="checkbox" name="options[sidebar_online]" id="options-sidebar-online" value="1"', !empty($context['sidebar_settings']['sidebar_online']) ? ' checked="checked"' : '', ' class="input_check" />
 					</dd>
 				</dl>
 				
